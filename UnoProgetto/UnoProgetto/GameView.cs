@@ -51,9 +51,30 @@ namespace Client
         /// stampa mazzo del giocatore/scarto/pescare
         /// </summary>
         /// <param name="deck"></param>
-        internal void PrintDeck()
+        
+        //stampa deck del giocatore
+        internal void printPlayerDeck()
         {
+            //drawCard.printDeck();
+        }
 
+        //stampa il deck di carte scartate
+        internal void printDiscardedDeck()
+        {
+            //drawCard.printDeck();
+        }
+
+        //stampa il deck da cui pescare
+        internal void printDrawDeck()
+        {
+            //drawCard.printDeck();
+        }
+
+        //stampa il deck (nascosto) degli altri giocatori
+        internal void printPlayersDeck()
+        {
+            //ma deve sapere quante carte stampare
+            //drawCard.coveredCard();
         }
 
 
