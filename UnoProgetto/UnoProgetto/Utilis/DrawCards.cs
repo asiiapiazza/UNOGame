@@ -7,20 +7,36 @@ using UnoGame.Models;
 
 namespace Client.Utilis
 {
-    class DrawCard
+    public class DrawCard
     {
-        private void printDeck(Deck deck)
+    
+            
+        
+        //a seconda del numero di giocatori, la posizione del deck degli avversari cambia
+        public void printDeck(List<Card> handsOfCards)
         {
-            for (int i = 0; i <deck.Count; i++)
+            
+         
+            for (int i = 0; i < handsOfCards.Count; i++)
             {
-                printCard(deck.listOfCards[i]);
+                printCard(handsOfCards[i], 0, 0);
             }
         }
 
-        private void printCard(Card card)
+        private void printCard(Card card, int top, int left)
         {
 
         }
+        
+        public void coveredCard()
+        {
+            Console.WriteLine();
+        }
+
+
+        //il giocatore vede la carta girata: deck avversari e carda da cui pescare
+
+
     }
 
 }
