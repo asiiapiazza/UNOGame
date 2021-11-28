@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace UnoGame
 {
-    class Program
+    class Server
     {
-        private static void Main(string[] args)
+        public static void Main(string[] args)
         {
            
             var model = new GameModel();
@@ -45,11 +45,13 @@ namespace UnoGame
                 controller.AddView(view);
 
                 //assegno il task. questa visione virtuale del giocatore si mette in attesa pronta
-                //ad ascoltare i messaggi da parte del client
+                //ad ascoltare i messaggi da parte del client. GLI PASSO IL METODO PER ASCOLTARE PER SEMPRE
                 tasks[i] = Task.Run(view.Run);
             }
 
             //faccio partire il controller
+            //il controller avvia un metodo Start che manda un messaggio di tipi view.START al client
+            //che permette di far stampare per ogni player il proprio deck + il resto
             controller.Start();
 
             //attendo che tutti i task finiscano

@@ -10,19 +10,20 @@ namespace UnoGame
     public class Message
     {
 
-        public Type Type { get; set; }
+        public TypeCard Type { get; set; }
         public string Body { get; set; }
-        public int NPlayers { get; set; }
 
 
     }
 
-    public enum Type
+    public enum TypeCard
     {
+        DRAW_CARDS,
         START,
+        SAID_UNO,
         CARD_NUMBER,
         JOLLY,
-        DRAW_CARDS,
+        MODEL_UPDATE,
         WIN,
         LOSE
     }

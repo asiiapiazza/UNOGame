@@ -9,20 +9,20 @@ using System.Text;
 using System.Text.Json;
 using UnoGame;
 using System.Threading.Tasks;
-using Type = UnoGame.Type;
+using TypeCard = UnoGame.TypeCard;
 
 namespace Client
 {
-    class Client
+    public class Client
     {
-
+        //view di un player
         public static GameView view;
 
         //rendere la view una variabile utilizzabile da tutte le classi del client
 
         public static void StartClient()
         {
-
+            
             //ip endpoint, sereve un IP e una porta. In questo caso local host
             var ipe = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8080);
 
@@ -61,17 +61,18 @@ namespace Client
                 switch (message.Type)
                 {
 
-                    case Type.START:
+                    //messaggi per la parte grafica
+                    case TypeCard.START:
                         view.Start();
                         break;
-                    case Type.DRAW_CARDS:
+                    case TypeCard.MODEL_UPDATE:
                         view.UpdateDecks();
                         break;
-                    case Type.WIN:
+                    case TypeCard.WIN:
                         //devo passare il giocatore del CLIENT
-                        view.hasWin();
+                        view.hasWon();
                         break;
-                    case Type.LOSE:
+                    case TypeCard.LOSE:
                         view.hasLost();
                         break;
 

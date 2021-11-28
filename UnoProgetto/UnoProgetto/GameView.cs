@@ -13,44 +13,45 @@ namespace Client
     {
 
         //devo fare scegliere al giocatore quanti giocatori giocano
-  
-        Menu menu = new Menu();
+        //dare dimensione massima console 
 
-        public GameView()
+
+        DrawCard drawCard = new DrawCard();
+
+
+        /// <summary>
+        ///  il suo mazzo, la carta scartata all’inizio, una carta scoperta che rappresenta il mazzo,
+        ///  il numero di carte degli avversari/carte degli avversi coperte 
+        /// </summary>
+        internal void Start()
+        {
+
+
+        }
+
+        /// <summary>
+        /// stampa carta scartata
+        /// </summary>
+        /// <param name="card"></param>
+        internal void PrintCard(Card card)
         {
             
         }
 
-        public void Start()
-        {
-            
-        }
-
-        public void PrintCard(Card card)
+        /// <summary>
+        /// stampa 
+        /// </summary>
+        internal void SelectCard()
         {
 
         }
 
-        public void SelectCard()
-        {
-
-        }
-        
 
         /// <summary>
         /// stampa mazzo del giocatore/scarto/pescare
         /// </summary>
         /// <param name="deck"></param>
-        public void PrintDeck(Deck deck)
-        {
-
-        }
-        
-
-        /// <summary>
-        /// metodo per updatare i deck di scarto e del giocatore quando pesca una carta/scarti/
-        /// </summary>
-        public void UpdateDecks()
+        internal void PrintDeck()
         {
 
         }
@@ -60,19 +61,24 @@ namespace Client
         /// ha perso, stampa sconfitta
         /// </summary>
         /// <param name="view"></param>
-        public void hasLost()
+        internal void hasLost()
         {
 
         }
 
-        public void hasWin()
+
+        /// <summary>
+        /// ha vinto, stampa vittoria
+        /// </summary>
+        /// <param name="view"></param>
+        internal void hasWon()
         {
            
         }
 
-        public void connectedPlayers()
+        internal void UpdateDecks()
         {
-
+            throw new NotImplementedException();
         }
     }
 }

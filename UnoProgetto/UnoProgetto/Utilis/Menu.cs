@@ -13,39 +13,34 @@ namespace Client.Utilis
         public int Print()
         {
 
-
-            //printHeader();
-            string[] menuItems = { "2 PLAYERS", "3 PLAYERS", "4 PLAYERS", "RULES", "EXIT", "JOIN" };
+            printHeader();
+            string[] menuItems = {"3 PLAYERS", "RULES", "EXIT" };
             var menu = new Menu();
             int option = menu.PrintOptions(menuItems);
             return option;
         }
 
-        public int NumberOfPlayers(int n)
-        {
-            int Nplayers = 0;
-            switch (n)
-            {
-                case 0:
-                    Nplayers = 2;
-                    break;
-                case 1:
-                    Nplayers = 3;
-                    break;
-                case 2:
-                    Nplayers = 4;
-                    break;
-                default:
-                    Nplayers = 2;
-                    break;
-            }
+        //public int NumberOfPlayers(int n)
+        //{
+        //    int Nplayers = 0;
+        //    switch (n)
+        //    {
+        //        case 0:
+        //            Nplayers = 2;
+                 
+        //            break;
+        //        default:
+        //            Nplayers = 3;
+        //            break;
+        //    }
 
-            return Nplayers;
-        }
+        //    return Nplayers;
+        //}
 
 
         private int PrintOptions(string[] menuItems)
         {
+
             int cursorPosition = 0;
             while (true)
             {
@@ -94,16 +89,17 @@ namespace Client.Utilis
                     Console.Clear();
                     break;
                 }
-
                 Console.Clear();
+                Console.SetCursorPosition(0, 0);
+                printHeader();
             }
 
             return cursorPosition;
         }
-        private void printHeader()
+        public void printHeader()
         {
 
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.ForegroundColor = ConsoleColor.Magenta;
             Console.WriteLine("  _    _                _____                      _ ");
             Console.WriteLine(" | |  | |              / ____|                    | |");
             Console.WriteLine(" | |  | |_ __   ___   | |  __  __ _ _ __ ___   ___| |");

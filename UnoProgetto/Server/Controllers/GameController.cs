@@ -12,77 +12,128 @@ namespace UnoGame.Controllers
     public class GameController
     {
         //array di giocatore
-        private PlayerView[] _views;
-        private int _turn;
 
+      
+        private PlayerView[] _views;
+        private int _player;
         public GameModel _model;
+        private List<Card> playerHand;
 
         public GameController(GameModel model)
         {
             _model = model;
             _views = new PlayerView[3];
-            _turn = 0;
+            _player = 0;
+            playerHand = _model.PlayersHand[_player];
         }
 
         public void AddView(PlayerView view)
         {
-            _views[_turn] = view;
-            NextTurn();
+            _views[_player] = view;
+            nextTurn();
+        }
+
+
+
+        //1) PRIMA OPERAZIONE ESEGUITA DEL SERVER
+        //questi metodi vanno nella playerview
+        //vengono richiamati dei metodi nel GameModel per la gestione dei deck       
+        public void Start()
+        {
+            //metodo che distribuisce 7 carte ad ogni giocatore della view
+            starterHands();
+
+            //serializzazione, manda messaggio al server di INIZIARE IL GIOCO
+            //foreach (var view in _views)
+            //{
+            //   
+
+            //}
+
+            //TESTING
+            _views[0].SendMessage(new Message { Type = TypeCard.START });
+            
+
         }
 
 
         /// <summary>
-        /// metodo per mischiare il mazzo deck iniziale
+        /// 
+        /// distribuisce 7 carte dal mazzo base ad ogni mazzo dei giocatori
         /// </summary>
-        public void shuffleDeck()
+        private void starterHands()
         {
-           
+            Card cardFromUnoHand;
+
+            for (int i = 0; i < _views.Count(); i++)
+            {
+                for (int j = 0; j < 7; j++)
+                {
+                    //prendo la carta in cima al mazzo coperta
+                    cardFromUnoHand = _model.UnoHand[0];
+
+                    //aggiungo carta al deck del giocatore
+                    _model.PlayersHand[i].Add(cardFromUnoHand);
+
+                    //rimuovo carta dal deck
+                    _model.UnoHand.Remove(cardFromUnoHand);
+                }
+            }
+            
         }
 
-        public void reverseOrder()
+        /// <summary>
+        /// metodo per la pesca delle carte dal deck. Quando pesco +4/+2 o devo pescare una carta per forza
+        /// </summary>
+        /// <param name="currentView"></param>
+        /// <param name="message"></param>
+        /// <param name="model"></param>
+        public void distribuiteCards(PlayerView currentView)
         {
-           
+            if (currentView != _views[_player])
+                throw new InvalidOperationException();
+
+            var lastDiscardedCard = _model.DiscardedHand.Last();
+
+            if (lastDiscardedCard.Type == Models.Type.DRAW_FOUR)
+            {
+                drawNCards(4);
+            }
+            else if (lastDiscardedCard.Type == Models.Type.DRAW_TWO)
+            {
+                drawNCards(2);
+            }
         }
 
-        public void checkDrawDeck()
+        private void drawNCards(int nCardsToDraw)
         {
+            for (int i = 0; i < nCardsToDraw; i++)
+            {
+                _model.drawFromDrawHand(playerHand);
+            }
+        }
+ 
+
+        public void checkCardValidity(PlayerView currentView, Message message)
+        {
+            //controllo se la view  del player che passo è uguale alla view
+            if (currentView != _views[_player])
+                throw new InvalidOperationException();
+            //se posso scartare, tolgo dal deck del giocatore la carta e la agggiungo al
+            //mazzo scarto. Se non posso scartare e ho gia pescato, passo il turno, se non ho pescato pesco
+            //scartando o passando il turno
+            
+
+
+        }
+
+        void checkDiscardedCard()
+        {
+
 
         }
 
         public void isWinner()
-        {
-         
-        }
-
-        public void drawCards(PlayerView currentView, Message message, GameModel model)
-        {
-            if (currentView != _views[_turn])
-                throw new InvalidOperationException();
-
-
-
-        }
-
-        public void checkCardValidity(PlayerView currentView)
-        {
-            //controllo se la view  del player che passo è uguale alla view
-            if (currentView != _views[_turn])
-                throw new InvalidOperationException();
-            
-
-
-        }
-
-        /// <summary>
-        /// metodo per la distribuzione delle carte delle carte iniziali 
-        /// la distribuzione è random
-        /// </summary>
-        public void distruibiteCards()
-        {
-            
-        }
-
-        public void isLoser()
         {
 
         }
@@ -91,33 +142,35 @@ namespace UnoGame.Controllers
         /// questo metodo prende il numero di giocatori che partecipano
         /// e incrementa il turno del giocatore successivo
         /// </summary>
-        private void NextTurn()
+        private void nextTurn()
         {
             
             //3 giocatore
-            if (_turn ==2)
+            if (_player ==2)
             {
-                _turn = 0;
+                _player = 0;
             }
             else
             {
-                _turn += 1;
+                _player += 1;
             }
 
 
         }
 
-        public void Start()
+        public void invertTurnOrder()
         {
 
-            foreach (var virtualView in _views)
-            {
-                //serializzazione, manda messaggio al server di iniziare il gioco
-                virtualView.SendMessage(new Message { Type = Type.START });
-            }
-
- 
         }
-            
+
+        public void checkDraw()
+        {
+            //usare _model
+            //se il mazzo da cui pescare è finitp
+            //richiamo il metodo che aggiunge il deck delle carte scartate
+            //tranne l'ultima che ho scartato
+        }
+
+
     }
 }

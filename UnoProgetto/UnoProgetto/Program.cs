@@ -7,27 +7,35 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text.Json;
 using UnoGame;
-using Type = UnoGame.Type;
+using UnoGame.Models;
+using Type = UnoGame.TypeCard;
 
 namespace Client
 {
-    class FirstStart
+    class Game
     {
-        public static int Nplayers = 2;
-
+        public static int Nplayers = 3;
         private static void Main(string[] args)
         {
             //STAMPA DEL MENU
             Console.CursorVisible = false;
             Menu menu = new Menu();
-            int option = 0;
+            PlayerController controller = new PlayerController();
+            
+            
+            
+            int option =  menu.Print();
 
-            while (option != 3 || option != 4)
+            //se premo le altre opzioni
+            while (option != 0)
             {
-                option = menu.Print();
-                Nplayers = menu.NumberOfPlayers(option);
+                Console.WriteLine("provas");
+                
+                
             }
 
+
+            //se premo opzione 0, quindi 3 players
             Client.StartClient();
 
         }

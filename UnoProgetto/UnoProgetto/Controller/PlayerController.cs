@@ -10,15 +10,19 @@ namespace Client.Controller
 {
     public class PlayerController
     {
-
-
-        public int printChooseOption()
-        {
-
-            //creazione oggetto menu interfaccia per ogni Playercontroller = player
         
-            
-            
+
+        public void selectOption(int n)
+        {
+           
+        }
+
+
+        //quando preme U per dire uno bisogna controllare se 
+        //ha una carta sola
+
+        private void saidUno()
+        {
 
         }
     }

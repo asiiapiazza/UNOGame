@@ -3,14 +3,18 @@
 
     public class Card
     {
-        Type type;
-        Color color;
+        public Card()
+        {
+        }
 
         public Card(Type type, Color color)
         {
-            this.type = type;
-            this.color = color;
+            this.Type = type;
+            this.Color = color;
         }
+
+        public Type Type { get; set; }
+        public Color Color { get; set; }
     }
 
     public enum Type
@@ -41,4 +45,6 @@
         GREEN,
         NONE
     }
+
+
 }

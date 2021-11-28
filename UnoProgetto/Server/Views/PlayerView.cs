@@ -49,21 +49,20 @@ namespace UnoGame.Views
                 //da sostituire switchcase
                 switch (message.Type)
                 {
-                    case Type.DRAW_CARDS:
+                    case TypeCard.START:
+                        _controller.Start();
+                        break;
+                    case TypeCard.DRAW_CARDS:
                         //pesca delle carte
-                        _controller.distruibiteCards();
+                        _controller.distribuiteCards(this);
                         break;
-                    case Type.CARD_NUMBER:
+                    case TypeCard.CARD_NUMBER:
                         //controllo carta messa dal giocatore
-                        _controller.checkCardValidity(this);
+                        _controller.checkCardValidity(this, message);
                         break;
-                    case Type.WIN:
+                    case TypeCard.WIN:
                         //vittoria del giocatore
                         _controller.isWinner();
-                        break;
-                    case Type.LOSE:
-                        //vittoria del giocatore
-                        _controller.isLoser();
                         break;
                     default:
                         Console.WriteLine($"{message.Type} not supported");
@@ -78,10 +77,7 @@ namespace UnoGame.Views
             _writer.WriteLine(JsonSerializer.Serialize(message));
         }
 
-        public void OnNotify(Message obj)
-        {
-            SendMessage(obj);
-        }
+      
     }
 
 }

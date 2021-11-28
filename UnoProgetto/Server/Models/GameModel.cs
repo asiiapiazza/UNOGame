@@ -1,32 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnoGame.Views;
 
 namespace UnoGame.Models
 {
     public class GameModel
     {
-        public Deck BaseDeck { get; set; } 
-        public Card DiscardedCard { get; set; } = null;
-        public Deck DrawDeck { get; set; } = null;
-        public Deck[] PlayersDecks { get; set; } = new Deck[3];
+        public List<Card> UnoHand { get; set; } 
+        public List<Card> DiscardedHand { get; set; } 
+        public List<Card>[] PlayersHand { get; set ; }
         public List<PlayerView> Views { get; set; }
-        public int Turn { get; set; }
+
 
         public GameModel()
         {
-            BaseDeck = startDeck();
+            initalizeUnoDeck();
+            initializePlayersHand();
             Views = new List<PlayerView>();
-
+            DiscardedHand = new List<Card>();
         }
 
 
-        public Deck startDeck()
+        //FATTO
+        private void initalizeUnoDeck()
         {
-            List<Card> listOfCards = new List<Card>()
+
+            UnoHand = new List<Card>()
             {
                 //CARTE BLU
                 new Card(Type.ONE, Color.BLUE),
@@ -161,17 +161,50 @@ namespace UnoGame.Models
                 new Card(Type.DRAW_FOUR, Color.NONE),
 
              };
-            return BaseDeck = new Deck(listOfCards);
-            
-          
+            var rnd = new Random();
+            var randomized = UnoHand.OrderBy(a => Guid.NewGuid()).ToList();
+            UnoHand = randomized;
         }
+
+
+        //FATTO
+        private void initializePlayersHand()
+        {
+            PlayersHand = new List<Card>[3];
+            PlayersHand[0] = new List<Card>();
+            PlayersHand[1] = new List<Card>();
+            PlayersHand[2] = new List<Card>();
+        }
+
+
+        //FATTO
+        public void playSelectedCard(Card card, List<Card> playerHand)
+        {
+            //1 carta rimossa dal mazzo del giocatore
+            playerHand.Remove(card);
+            DiscardedHand.Add(card);  
+        }
+
+        //FATTO
+        public void drawFromDrawHand(List<Card> playerHand)
+        {
+            //2 pesco dal mazzo pesca e aggiungo al giocatore
+            var card = UnoHand.Last();
+            UnoHand.Remove(card);
+            playerHand.Add(card);
+        }
+
+
+        //da capire
         private void Notify(Message msg)
         {
             foreach (var view in Views)
             {
+               
                 view.SendMessage(msg);
             }
         }
+
 
         public void AddView(PlayerView view)
         {
