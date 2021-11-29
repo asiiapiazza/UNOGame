@@ -45,7 +45,11 @@ namespace UnoGame
                 controller.AddView(view);
 
                 //assegno il task. questa visione virtuale del giocatore si mette in attesa pronta
-                //ad ascoltare i messaggi da parte del client. GLI PASSO IL METODO PER ASCOLTARE PER SEMPRE
+                //ad ascoltare i messaggi da parte del client.
+                
+
+
+                //GLI PASSO IL METODO PER ASCOLTARE PER SEMPRE
                 tasks[i] = Task.Run(view.Run);
             }
 

@@ -12,11 +12,7 @@ namespace Client
     public class GameView
     {
 
-        //devo fare scegliere al giocatore quanti giocatori giocano
         //dare dimensione massima console 
-
-
-        DrawCard drawCard = new DrawCard();
 
 
         /// <summary>
@@ -39,11 +35,14 @@ namespace Client
         }
 
         /// <summary>
-        /// stampa 
+        /// selezione della carta tramite keybindings
         /// </summary>
-        internal void SelectCard()
+        internal Card SelectCard()
         {
-
+            //TESTING
+            //Card card = new Card(UnoGame.Models.Type.FIVE, Color.YELLOW);
+            //return card;
+            return null;
         }
 
 
@@ -76,9 +75,14 @@ namespace Client
            
         }
 
+
+        /// <summary>
+        /// metodo per l'update della gameview ogni qualvolta che avviente 
+        /// un cambio del model (draw, discard card)
+        /// </summary>
         internal void UpdateDecks()
         {
-            throw new NotImplementedException();
+           
         }
     }
 }

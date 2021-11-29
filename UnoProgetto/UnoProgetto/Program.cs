@@ -14,23 +14,20 @@ namespace Client
 {
     class Game
     {
-        public static int Nplayers = 3;
+    
         private static void Main(string[] args)
         {
             //STAMPA DEL MENU
             Console.CursorVisible = false;
             Menu menu = new Menu();
             PlayerController controller = new PlayerController();
-            
-            
-            
+
             int option =  menu.Print();
 
             //se premo le altre opzioni
             while (option != 0)
             {
-                Console.WriteLine("provas");
-                
+                        
                 
             }
 

@@ -17,14 +17,16 @@ namespace UnoGame.Controllers
         private PlayerView[] _views;
         private int _player;
         public GameModel _model;
-        private List<Card> playerHand;
+        private List<Card> _playerHand;
+        private Card _lastDiscardedCard;
 
         public GameController(GameModel model)
         {
             _model = model;
             _views = new PlayerView[3];
             _player = 0;
-            playerHand = _model.PlayersHand[_player];
+            _playerHand = _model.PlayersHand[_player];
+      
         }
 
         public void AddView(PlayerView view)
@@ -51,8 +53,9 @@ namespace UnoGame.Controllers
             //}
 
             //TESTING
+            //manda messaggio di inizio al giocatore 0
             _views[0].SendMessage(new Message { Type = TypeCard.START });
-            
+ 
 
         }
 
@@ -90,16 +93,14 @@ namespace UnoGame.Controllers
         /// <param name="model"></param>
         public void distribuiteCards(PlayerView currentView)
         {
+            _lastDiscardedCard = _model.DiscardedHand.Last();
             if (currentView != _views[_player])
                 throw new InvalidOperationException();
-
-            var lastDiscardedCard = _model.DiscardedHand.Last();
-
-            if (lastDiscardedCard.Type == Models.Type.DRAW_FOUR)
+            if (_lastDiscardedCard.Type == Models.Type.DRAW_FOUR)
             {
                 drawNCards(4);
             }
-            else if (lastDiscardedCard.Type == Models.Type.DRAW_TWO)
+            else if (_lastDiscardedCard.Type == Models.Type.DRAW_TWO)
             {
                 drawNCards(2);
             }
@@ -109,7 +110,7 @@ namespace UnoGame.Controllers
         {
             for (int i = 0; i < nCardsToDraw; i++)
             {
-                _model.drawFromDrawHand(playerHand);
+                _model.drawFromDrawHand(_playerHand);
             }
         }
  
@@ -123,16 +124,30 @@ namespace UnoGame.Controllers
             //mazzo scarto. Se non posso scartare e ho gia pescato, passo il turno, se non ho pescato pesco
             //scartando o passando il turno
             
-
-
         }
 
-        void checkDiscardedCard()
+        /// <summary>
+        /// metodo per scartare una propria carta dal proprio mazzo
+        /// </summary>
+        /// <param name="selectedCard"></param>
+        public void discardCard(Card selectedCard)
         {
-
-
+            checkDiscardedCard(selectedCard);
+            _model.discardCardFromMyHand(selectedCard, _playerHand);
+     
         }
 
+
+
+        //DA FARE
+        void checkDiscardedCard(Card selectedCard)
+        {
+            //controllo della carta scartata e la carta del mazzo
+            // _lastDiscardedCard = ultima carta scartata
+        }
+
+
+        //DA FARE
         public void isWinner()
         {
 
@@ -170,6 +185,9 @@ namespace UnoGame.Controllers
             //richiamo il metodo che aggiunge il deck delle carte scartate
             //tranne l'ultima che ho scartato
         }
+
+
+     
 
 
     }

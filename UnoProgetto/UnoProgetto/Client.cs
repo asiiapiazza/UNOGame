@@ -10,19 +10,20 @@ using System.Text.Json;
 using UnoGame;
 using System.Threading.Tasks;
 using TypeCard = UnoGame.TypeCard;
+using UnoGame.Models;
 
 namespace Client
 {
     public class Client
     {
         //view di un player
-        public static GameView view;
-
+      
         //rendere la view una variabile utilizzabile da tutte le classi del client
 
         public static void StartClient()
         {
-            
+            var view = new GameView();
+
             //ip endpoint, sereve un IP e una porta. In questo caso local host
             var ipe = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8080);
 
@@ -51,10 +52,10 @@ namespace Client
             while (true)
             {
                 //aggiunto dopo, leggere cosa mi dice il server. Operazione bloccante, se non c'è niente rimane in atesa
-                var socketMessage = reader.ReadLine();
+                var data = reader.ReadLine();
 
                 //deserializzo con la classe MESSAGE
-                var message = JsonSerializer.Deserialize<Message>(reader.ReadLine());
+                var message = JsonSerializer.Deserialize<Message>(data);
 
                 //operazione da fare in base al tipo
 
@@ -65,8 +66,17 @@ namespace Client
                     case TypeCard.START:
                         view.Start();
                         break;
-                    case TypeCard.MODEL_UPDATE:
+
+                        //SELEZIONE DELLA CARTA
+                    case TypeCard.NEXT_TURN:
+                        var selectedCard = view.SelectCard();
+                        writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeCard.NEXT_TURN, Card = selectedCard }));
+                        break;
+             
+                    //PESCARE DELLE CARTE
+                    case TypeCard.DRAW_CARDS:
                         view.UpdateDecks();
+                        
                         break;
                     case TypeCard.WIN:
                         //devo passare il giocatore del CLIENT

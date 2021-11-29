@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnoGame;
+using UnoGame.Models;
 
 namespace Client.Controller
 {
@@ -17,6 +18,11 @@ namespace Client.Controller
            
         }
 
+
+        internal List<Card> SelectCard()
+        {
+            return null;
+        }
 
         //quando preme U per dire uno bisogna controllare se 
         //ha una carta sola

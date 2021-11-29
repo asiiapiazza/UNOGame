@@ -19,6 +19,7 @@ namespace UnoGame.Models
             initializePlayersHand();
             Views = new List<PlayerView>();
             DiscardedHand = new List<Card>();
+
         }
 
 
@@ -176,13 +177,19 @@ namespace UnoGame.Models
             PlayersHand[2] = new List<Card>();
         }
 
-
+        public void discardCardFromMyHand(Card card,  List<Card> playerHand)
+        {
+            playerHand.Remove(card);
+            DiscardedHand.Add(card);
+            Notify(new Message { Type = TypeCard.NEXT_TURN });
+        }
         //FATTO
         public void playSelectedCard(Card card, List<Card> playerHand)
         {
             //1 carta rimossa dal mazzo del giocatore
             playerHand.Remove(card);
-            DiscardedHand.Add(card);  
+            DiscardedHand.Add(card);
+            Notify(new Message { Type = TypeCard.NEXT_TURN });
         }
 
         //FATTO
@@ -192,6 +199,9 @@ namespace UnoGame.Models
             var card = UnoHand.Last();
             UnoHand.Remove(card);
             playerHand.Add(card);
+
+            //controllo se posso mettere giu un altra carta oppure saltare il turno
+            Notify(new Message { Type = TypeCard.NEXT_TURN });
         }
 
 

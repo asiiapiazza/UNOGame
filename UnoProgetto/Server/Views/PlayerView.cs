@@ -8,10 +8,10 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
+using UnoGame.Models;
 
 namespace UnoGame.Views
 {
-
 
     public class PlayerView
     {
@@ -49,21 +49,23 @@ namespace UnoGame.Views
                 //da sostituire switchcase
                 switch (message.Type)
                 {
+                    //il gioco è iniziato
                     case TypeCard.START:
                         _controller.Start();
                         break;
+
+                    //pesca delle carte
                     case TypeCard.DRAW_CARDS:
-                        //pesca delle carte
                         _controller.distribuiteCards(this);
                         break;
-                    case TypeCard.CARD_NUMBER:
-                        //controllo carta messa dal giocatore
-                        _controller.checkCardValidity(this, message);
+
+                    //il player ha selezionato la carta
+                    case TypeCard.NEXT_TURN:
+                        var card = message.Card;
+                        _controller.discardCard(card);
                         break;
-                    case TypeCard.WIN:
-                        //vittoria del giocatore
-                        _controller.isWinner();
-                        break;
+
+
                     default:
                         Console.WriteLine($"{message.Type} not supported");
                         break;
