@@ -5,12 +5,16 @@ using UnoGame.Views;
 
 namespace UnoGame.Models
 {
+
+    
     public class GameModel
     {
+       
         public List<Card> UnoHand { get; set; } 
         public List<Card> DiscardedHand { get; set; } 
         public List<Card>[] PlayersHand { get; set ; }
         public List<PlayerView> Views { get; set; }
+
 
 
         public GameModel()
@@ -19,8 +23,8 @@ namespace UnoGame.Models
             initializePlayersHand();
             Views = new List<PlayerView>();
             DiscardedHand = new List<Card>();
-
         }
+
 
 
         //FATTO

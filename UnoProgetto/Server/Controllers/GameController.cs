@@ -15,23 +15,23 @@ namespace UnoGame.Controllers
 
       
         private PlayerView[] _views;
-        private int _player;
+        private int _turn;
         public GameModel _model;
-        private List<Card> _playerHand;
         private Card _lastDiscardedCard;
+        int n = 0;
 
         public GameController(GameModel model)
         {
             _model = model;
-            _views = new PlayerView[3];
-            _player = 0;
-            _playerHand = _model.PlayersHand[_player];
-      
+            _views = new PlayerView[2];
+            _turn = 0;
+    
         }
 
         public void AddView(PlayerView view)
         {
-            _views[_player] = view;
+          
+            _views[_turn] = view;
             nextTurn();
         }
 
@@ -44,30 +44,49 @@ namespace UnoGame.Controllers
         {
             //metodo che distribuisce 7 carte ad ogni giocatore della view
             starterHands();
-
+            firstDiscardedCard();
             //serializzazione, manda messaggio al server di INIZIARE IL GIOCO
+
             //foreach (var view in _views)
             //{
-            //   
+            //    view.SendMessage(new Message { Type = TypeCard.START, Body = JsonSerializer.Serialize<List<Card>>(_model.PlayersHand[n]) });
+            //    n++;
 
             //}
 
             //TESTING
             //manda messaggio di inizio al giocatore 0
-            _views[0].SendMessage(new Message { Type = TypeCard.START });
- 
 
+            _model.Views[0].SendMessage(new Message { Type = TypeCard.START, Body = JsonSerializer.Serialize<GameModel>(_model)});
+
+           
+        }
+
+
+        //DA FARE
+
+        /// <summary>
+        /// Metodo per la pesca dal deck UnoHand della prima carta scartata ad inizio game
+        /// devo fare i controlli 
+        /// . Nel caso in cui la prima carta sia una carta Azione, è necessario applicare le regole della sezione Funzioni delle carte
+        ///; fa eccezione la carta "Jolly Pesca Quattro" che, se scoperta all'inizio del gioco, deve essere 
+        ///rimessa a caso nel "mazzo pesca" e sostituita con un'altra.
+        /// </summary>
+        /// <returns></returns>
+        private void firstDiscardedCard()
+        {
+            _model.DiscardedHand.Add(_model.UnoHand.Last());
+            _model.UnoHand.Remove(_model.DiscardedHand.Last());
+            
         }
 
 
         /// <summary>
-        /// 
         /// distribuisce 7 carte dal mazzo base ad ogni mazzo dei giocatori
         /// </summary>
         private void starterHands()
         {
             Card cardFromUnoHand;
-
             for (int i = 0; i < _views.Count(); i++)
             {
                 for (int j = 0; j < 7; j++)
@@ -82,6 +101,8 @@ namespace UnoGame.Controllers
                     _model.UnoHand.Remove(cardFromUnoHand);
                 }
             }
+
+
             
         }
 
@@ -94,7 +115,7 @@ namespace UnoGame.Controllers
         public void distribuiteCards(PlayerView currentView)
         {
             _lastDiscardedCard = _model.DiscardedHand.Last();
-            if (currentView != _views[_player])
+            if (currentView != _views[_turn])
                 throw new InvalidOperationException();
             if (_lastDiscardedCard.Type == Models.Type.DRAW_FOUR)
             {
@@ -110,30 +131,22 @@ namespace UnoGame.Controllers
         {
             for (int i = 0; i < nCardsToDraw; i++)
             {
-                _model.drawFromDrawHand(_playerHand);
+                _model.drawFromDrawHand(_model.PlayersHand[n]);
             }
         }
  
 
-        public void checkCardValidity(PlayerView currentView, Message message)
-        {
-            //controllo se la view  del player che passo è uguale alla view
-            if (currentView != _views[_player])
-                throw new InvalidOperationException();
-            //se posso scartare, tolgo dal deck del giocatore la carta e la agggiungo al
-            //mazzo scarto. Se non posso scartare e ho gia pescato, passo il turno, se non ho pescato pesco
-            //scartando o passando il turno
-            
-        }
-
+      
         /// <summary>
         /// metodo per scartare una propria carta dal proprio mazzo
         /// </summary>
         /// <param name="selectedCard"></param>
-        public void discardCard(Card selectedCard)
+        public void discardCard(Message message)
         {
+           
+            var selectedCard = JsonSerializer.Deserialize<Card>(message.Body);
             checkDiscardedCard(selectedCard);
-            _model.discardCardFromMyHand(selectedCard, _playerHand);
+            _model.discardCardFromMyHand(selectedCard, _model.PlayersHand[n]);
      
         }
 
@@ -150,6 +163,19 @@ namespace UnoGame.Controllers
         //DA FARE
         public void isWinner()
         {
+            //controllare se il mazzo del giocatore è vuoto
+        }
+
+
+        //DA FARE
+        //se posso scartare, tolgo dal deck del giocatore la carta e la agggiungo al
+        //mazzo scarto. Se non posso scartare, pesco. Se ho pescato e non ho niente passo il turno
+        public void checkCardAvailability(PlayerView currentView, Message message)
+        {
+            //controllo se la view  del player che passo è uguale alla view
+            if (currentView != _views[_turn])
+                throw new InvalidOperationException();
+           
 
         }
 
@@ -160,14 +186,16 @@ namespace UnoGame.Controllers
         private void nextTurn()
         {
             
-            //3 giocatore
-            if (_player ==2)
+       
+            if (_turn ==2)
             {
-                _player = 0;
+                _turn = 0;
+                
             }
             else
             {
-                _player += 1;
+
+                _turn += 1;
             }
 
 

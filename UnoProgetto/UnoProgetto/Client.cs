@@ -64,18 +64,21 @@ namespace Client
 
                     //messaggi per la parte grafica
                     case TypeCard.START:
-                        view.Start();
+                        var model = JsonSerializer.Deserialize<GameModel>(message.Body);
+                        view.Start(model);
                         break;
 
                         //SELEZIONE DELLA CARTA
                     case TypeCard.NEXT_TURN:
+                        view.UpdateHandView();
                         var selectedCard = view.SelectCard();
-                        writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeCard.NEXT_TURN, Card = selectedCard }));
+                        writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeCard.NEXT_TURN, Body = JsonSerializer.Serialize(selectedCard) }));
+                        
                         break;
              
                     //PESCARE DELLE CARTE
                     case TypeCard.DRAW_CARDS:
-                        view.UpdateDecks();
+                        view.UpdateHandView();
                         
                         break;
                     case TypeCard.WIN:

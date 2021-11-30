@@ -12,7 +12,7 @@ namespace UnoGame
     {
 
         public TypeCard Type { get; set; }
-        public Card Card { get; set; }
+        public string Body { get; set; }
 
 
     }

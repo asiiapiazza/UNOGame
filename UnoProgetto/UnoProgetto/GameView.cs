@@ -13,27 +13,27 @@ namespace Client
     {
 
         //dare dimensione massima console 
-
+        DrawCard drawCards = new DrawCard();
 
         /// <summary>
         ///  il suo mazzo, la carta scartata all’inizio, una carta scoperta che rappresenta il mazzo,
         ///  il numero di carte degli avversari/carte degli avversi coperte 
         /// </summary>
-        internal void Start()
+        internal void Start(GameModel model)
         {
 
+            //visione del mio deck
+            drawCards.printPlayerHand(model.PlayersHand[0]);
 
+            printPlayersDeck();
+
+            //stampo carta scartata
+            printDiscardedCard(model.DiscardedHand.Last());
+            printDrawCard();
         }
 
-        /// <summary>
-        /// stampa carta scartata
-        /// </summary>
-        /// <param name="card"></param>
-        internal void PrintCard(Card card)
-        {
-            
-        }
 
+      
         /// <summary>
         /// selezione della carta tramite keybindings
         /// </summary>
@@ -51,29 +51,25 @@ namespace Client
         /// </summary>
         /// <param name="deck"></param>
         
-        //stampa deck del giocatore
-        internal void printPlayerDeck()
-        {
-            //drawCard.printDeck();
-        }
+   
 
         //stampa il deck di carte scartate
-        internal void printDiscardedDeck()
+        internal void printDiscardedCard(Card card)
         {
-            //drawCard.printDeck();
+            drawCards.printCard(card, 63,15);
         }
 
         //stampa il deck da cui pescare
-        internal void printDrawDeck()
+        internal void printDrawCard()
         {
-            //drawCard.printDeck();
+            drawCards.coveredCard(72, 15);
         }
 
         //stampa il deck (nascosto) degli altri giocatori
         internal void printPlayersDeck()
         {
-            //ma deve sapere quante carte stampare
-            //drawCard.coveredCard();
+            drawCards.printOpponentHand(7);
+            drawCards.printOpponentHorizHand(7);
         }
 
 
@@ -101,7 +97,7 @@ namespace Client
         /// metodo per l'update della gameview ogni qualvolta che avviente 
         /// un cambio del model (draw, discard card)
         /// </summary>
-        internal void UpdateDecks()
+        internal void UpdateHandView()
         {
            
         }

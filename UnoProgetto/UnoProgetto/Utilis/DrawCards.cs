@@ -9,19 +9,10 @@ namespace Client.Utilis
 {
     public class DrawCard
     {
-    
-            
+   
         
-        //a seconda del numero di giocatori, la posizione del deck degli avversari cambia
-        public void printDeck(List<Card> handsOfCards)
-        {
-            for (int i = 0; i < handsOfCards.Count; i++)
-            {
-                printCard(handsOfCards[i], 0, 0);
-            }
-        }
-
-        private void printCard(Card card, int positionX, int positionY)
+        
+        internal void printCard(Card card, int left, int top)
         {
             switch (card.Color)
             {
@@ -39,16 +30,16 @@ namespace Client.Utilis
                     break;
             }
 
-            Console.SetCursorPosition(positionX, positionY);
+            Console.SetCursorPosition(left, top);
             Console.WriteLine(" _____ ");
 
-            Console.SetCursorPosition(positionX, positionY + 1);
+            Console.SetCursorPosition(left, top + 1);
             Console.WriteLine("|     |");
 
-            Console.SetCursorPosition(positionX, positionY + 2);
+            Console.SetCursorPosition(left, top + 2);
             Console.WriteLine("|     |");
 
-            Console.SetCursorPosition(positionX, positionY + 3);
+            Console.SetCursorPosition(left, top + 3);
 
             switch (card.Type)
             {
@@ -102,15 +93,54 @@ namespace Client.Utilis
                     break;
             }
 
-            Console.SetCursorPosition(positionX, positionY + 4);
+            Console.SetCursorPosition(left, top + 4);
             Console.WriteLine("|     |");
 
 
-            Console.SetCursorPosition(positionX, positionY + 5);
+            Console.SetCursorPosition(left, top + 5);
             Console.WriteLine("|_____|");
 
             Console.ResetColor();
         }
+
+        internal void printOpponentHand(int nCards)
+        {
+            int top = 0;
+            int left = 30;
+            for (int i = 0; i < nCards; i++)
+            {
+                coveredCard(left, top);
+                left += 10;
+            }
+            
+        }
+
+        internal void printOpponentHorizHand(int nCards)
+        {
+            int left = 0;
+            int top = 1;
+            for (int i = 0; i < nCards; i++)
+            {
+                coveredHorizontalCard(left, top);
+                top += 5;
+            }
+
+        }
+
+
+        //a seconda del numero di giocatori, la posizione del deck degli avversari cambia
+        public void printPlayerHand(List<Card> hand)
+        {
+            int top = 37;
+            int left = 30;
+            for (int i = 0; i < hand.Count; i++)
+            {
+                printCard(hand[i], left, top);
+                left += 10;
+
+            }
+        }
+
 
         //il giocatore vede la carta girata: deck avversari e carta da cui pescare
         public void coveredCard(int positionX, int positionY)
@@ -134,7 +164,26 @@ namespace Client.Utilis
             Console.SetCursorPosition(positionX, positionY + 5);
             Console.WriteLine("|_____|");
 
+           
             Console.ResetColor();
+        }
+
+        public void coveredHorizontalCard(int left, int top)
+        {
+            Console.SetCursorPosition(left, top);
+            Console.WriteLine(" __________");
+
+
+            Console.SetCursorPosition(left, top + 1);
+            Console.WriteLine("|    C     |");
+            Console.SetCursorPosition(left, top + 2);
+            Console.WriteLine("|    Z     |");
+
+            Console.SetCursorPosition(left, top + 3);
+            Console.WriteLine("|    O     |");
+
+            Console.SetCursorPosition(left, top + 4);
+            Console.WriteLine("|__________|");
         }
 
 

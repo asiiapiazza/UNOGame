@@ -42,7 +42,7 @@ namespace UnoGame.Views
             {
 
                 //aspetta messaggio del client
-                var data = _reader.ReadLine();
+               var data = _reader.ReadLine();
                 var message = JsonSerializer.Deserialize<Message>(data);
 
 
@@ -54,15 +54,16 @@ namespace UnoGame.Views
                         _controller.Start();
                         break;
 
-                    //pesca delle carte
-                    case TypeCard.DRAW_CARDS:
-                        _controller.distribuiteCards(this);
-                        break;
 
                     //il player ha selezionato la carta
+                    //prima di scartarla controlla se deve pescare
+                    //delle carte per i +4/+2
+                    
                     case TypeCard.NEXT_TURN:
-                        var card = message.Card;
-                        _controller.discardCard(card);
+
+                        _controller.distribuiteCards(this);
+                        _controller.discardCard(message);
+                        _writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeCard.NEXT_TURN}));
                         break;
 
 

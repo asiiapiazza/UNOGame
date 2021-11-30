@@ -13,7 +13,7 @@ namespace UnoGame
     {
         public static void Main(string[] args)
         {
-           
+            int nP = 1;
             var model = new GameModel();
             var controller = new GameController(model);
             var ipe = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8080);
@@ -24,11 +24,11 @@ namespace UnoGame
 
             //ho bisogno di dude task: uno per la comunicazione con client0 e una con client1
             //creo un array di tasks
-            var tasks = new Task[1];
+            var tasks = new Task[nP];
 
             //ciclo dove ascolto per due volte
             
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < nP; i++)
             {
                 //si blocca finche un client non si è connesso alla socket
                 //appena un client si connette alla socket, non è bloccante e passo alla riga di codice successiva
