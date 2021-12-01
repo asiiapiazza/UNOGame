@@ -12,15 +12,16 @@ namespace UnoGame.Models
        
         public List<Card> UnoHand { get; set; } 
         public List<Card> DiscardedHand { get; set; } 
-        public List<Card>[] PlayersHand { get; set ; }
+        //public List<Card>[] PlayersHand { get; set ; }
         public List<PlayerView> Views { get; set; }
+        
 
 
 
         public GameModel()
         {
             initalizeUnoDeck();
-            initializePlayersHand();
+            //initializePlayersHand();
             Views = new List<PlayerView>();
             DiscardedHand = new List<Card>();
         }
@@ -172,21 +173,25 @@ namespace UnoGame.Models
         }
 
 
-        //FATTO
-        private void initializePlayersHand()
-        {
-            PlayersHand = new List<Card>[3];
-            PlayersHand[0] = new List<Card>();
-            PlayersHand[1] = new List<Card>();
-            PlayersHand[2] = new List<Card>();
-        }
+        ////FATTO
+        //private void initializePlayersHand()
+        //{
+        //    PlayersHand = new List<Card>[3];
+        //    PlayersHand[0] = new List<Card>();
+        //    PlayersHand[1] = new List<Card>();
+        //    PlayersHand[2] = new List<Card>();
+        //}
 
         public void discardCardFromMyHand(Card card,  List<Card> playerHand)
         {
             playerHand.Remove(card);
             DiscardedHand.Add(card);
+
+            //aggiorna il model + nexturn
             Notify(new Message { Type = TypeCard.NEXT_TURN });
         }
+
+
         //FATTO
         public void playSelectedCard(Card card, List<Card> playerHand)
         {

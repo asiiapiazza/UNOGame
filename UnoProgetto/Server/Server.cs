@@ -13,7 +13,7 @@ namespace UnoGame
     {
         public static void Main(string[] args)
         {
-            int nP = 1;
+            int nP = 2;
             var model = new GameModel();
             var controller = new GameController(model);
             var ipe = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8080);

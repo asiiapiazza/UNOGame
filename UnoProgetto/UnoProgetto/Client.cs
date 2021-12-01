@@ -43,6 +43,8 @@ namespace Client
             writer.AutoFlush = true;
 
 
+            Card selectedCard = new Card();
+
 
             //deve aspettare che il server gli dica che si sia connesso un altro client
             //while true, deve continuare sempre a cercare qualche messaggio del server
@@ -57,6 +59,7 @@ namespace Client
                 //deserializzo con la classe MESSAGE
                 var message = JsonSerializer.Deserialize<Message>(data);
 
+                List<Card> hand = new List<Card>();
                 //operazione da fare in base al tipo
 
                 switch (message.Type)
@@ -64,21 +67,24 @@ namespace Client
 
                     //messaggi per la parte grafica
                     case TypeCard.START:
-                        var model = JsonSerializer.Deserialize<GameModel>(message.Body);
-                        view.Start(model);
+                        hand = JsonSerializer.Deserialize<List<Card>>(message.Body);
+                        selectedCard = view.Start(hand);
+                        writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeCard.NEXT_TURN, Body = JsonSerializer.Serialize(selectedCard) }));
                         break;
 
                         //SELEZIONE DELLA CARTA
                     case TypeCard.NEXT_TURN:
-                        view.UpdateHandView();
-                        var selectedCard = view.SelectCard();
+                        hand = JsonSerializer.Deserialize<List<Card>>(message.Body);
+                        view.updateView(hand);
+                        selectedCard = view.SelectCard();
                         writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeCard.NEXT_TURN, Body = JsonSerializer.Serialize(selectedCard) }));
+
                         
                         break;
              
                     //PESCARE DELLE CARTE
                     case TypeCard.DRAW_CARDS:
-                        view.UpdateHandView();
+                        view.updateView(hand);
                         
                         break;
                     case TypeCard.WIN:

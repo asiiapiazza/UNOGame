@@ -20,6 +20,13 @@ namespace UnoGame.Views
         private StreamReader _reader;
         private StreamWriter _writer;
         private GameController _controller;
+        internal List<Card> _hand = new List<Card>();
+        internal Card _lastDiscardedCard;
+
+        public PlayerView()
+        {
+
+        }
 
         //ho bisogno della socket e del controller di riferimento
         public PlayerView(Socket socket, GameController controller)
@@ -42,7 +49,7 @@ namespace UnoGame.Views
             {
 
                 //aspetta messaggio del client
-               var data = _reader.ReadLine();
+                var data = _reader.ReadLine();
                 var message = JsonSerializer.Deserialize<Message>(data);
 
 
@@ -63,7 +70,8 @@ namespace UnoGame.Views
 
                         _controller.distribuiteCards(this);
                         _controller.discardCard(message);
-                        _writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeCard.NEXT_TURN}));
+                        _writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeCard.NEXT_TURN, Body = JsonSerializer.Serialize(_hand)}));
+                        
                         break;
 
 

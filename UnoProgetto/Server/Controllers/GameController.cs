@@ -25,7 +25,7 @@ namespace UnoGame.Controllers
             _model = model;
             _views = new PlayerView[2];
             _turn = 0;
-    
+
         }
 
         public void AddView(PlayerView view)
@@ -47,16 +47,17 @@ namespace UnoGame.Controllers
             firstDiscardedCard();
             //serializzazione, manda messaggio al server di INIZIARE IL GIOCO
 
-            //foreach (var view in _views)
-            //{
-            //    view.SendMessage(new Message { Type = TypeCard.START, Body = JsonSerializer.Serialize<List<Card>>(_model.PlayersHand[n]) });
-            //    n++;
+            foreach (var view in _views)
+            {
 
-            //}
+                view.SendMessage(new Message { Type = TypeCard.START, Body = JsonSerializer.Serialize<List<Card>>(view._hand) });
+                view.SendMessage(new Message { Type = TypeCard.START, Body = JsonSerializer.Serialize<Card>(view._lastDiscardedCard) });
+                n++;
+
+            }
 
             //TESTING
             //manda messaggio di inizio al giocatore 0
-
             _model.Views[0].SendMessage(new Message { Type = TypeCard.START, Body = JsonSerializer.Serialize<GameModel>(_model)});
 
            
@@ -92,10 +93,10 @@ namespace UnoGame.Controllers
                 for (int j = 0; j < 7; j++)
                 {
                     //prendo la carta in cima al mazzo coperta
-                    cardFromUnoHand = _model.UnoHand[0];
+                    cardFromUnoHand = _model.UnoHand.Last();
 
                     //aggiungo carta al deck del giocatore
-                    _model.PlayersHand[i].Add(cardFromUnoHand);
+                    _model.Views[i]._hand.Add(cardFromUnoHand);
 
                     //rimuovo carta dal deck
                     _model.UnoHand.Remove(cardFromUnoHand);
@@ -131,7 +132,7 @@ namespace UnoGame.Controllers
         {
             for (int i = 0; i < nCardsToDraw; i++)
             {
-                _model.drawFromDrawHand(_model.PlayersHand[n]);
+                _model.drawFromDrawHand(_model.Views[n]._hand);
             }
         }
  
@@ -146,7 +147,7 @@ namespace UnoGame.Controllers
            
             var selectedCard = JsonSerializer.Deserialize<Card>(message.Body);
             checkDiscardedCard(selectedCard);
-            _model.discardCardFromMyHand(selectedCard, _model.PlayersHand[n]);
+            _model.discardCardFromMyHand(selectedCard, _model.Views[n]._hand);
      
         }
 
@@ -201,6 +202,7 @@ namespace UnoGame.Controllers
 
         }
 
+        //DA FARE
         public void invertTurnOrder()
         {
 

@@ -15,6 +15,7 @@ namespace UnoGame
         public string Body { get; set; }
 
 
+
     }
 
 
@@ -23,6 +24,7 @@ namespace UnoGame
     {
         DRAW_CARDS,
         START,
+       
         NEXT_TURN,
         SAID_UNO,
         WIN,

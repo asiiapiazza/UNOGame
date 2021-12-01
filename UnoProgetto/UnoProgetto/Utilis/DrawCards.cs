@@ -128,19 +128,44 @@ namespace Client.Utilis
         }
 
 
-        //a seconda del numero di giocatori, la posizione del deck degli avversari cambia
-        public void printPlayerHand(List<Card> hand)
+        internal void indexCard(int left, int top)
         {
+            Console.SetCursorPosition(left, top);
+            Console.WriteLine("*");
+        }
+
+
+        //a seconda del numero di giocatori, la posizione del deck degli avversari cambia
+        public void printPlayerHand(List<Card> hand, int startIndex, int endIndex)
+        {
+
+
             int top = 37;
             int left = 30;
-            for (int i = 0; i < hand.Count; i++)
+            for (int i = startIndex; i <=endIndex; i++)
             {
                 printCard(hand[i], left, top);
                 left += 10;
 
             }
+
+        }
+        internal void printArrowL()
+        {
+            Console.SetCursorPosition(50,40);
+            Console.WriteLine("-->");
         }
 
+        internal void printArrowR()
+        {
+            Console.SetCursorPosition(30, 40);
+            Console.WriteLine("<--");
+        }
+        public void clearCurrentConsoleLine()
+        {
+            Console.Write(new String(' ', Console.BufferWidth));
+
+        }
 
         //il giocatore vede la carta girata: deck avversari e carta da cui pescare
         public void coveredCard(int positionX, int positionY)
@@ -171,7 +196,7 @@ namespace Client.Utilis
         public void coveredHorizontalCard(int left, int top)
         {
             Console.SetCursorPosition(left, top);
-            Console.WriteLine(" __________");
+            Console.WriteLine(" ----------");
 
 
             Console.SetCursorPosition(left, top + 1);
@@ -183,7 +208,7 @@ namespace Client.Utilis
             Console.WriteLine("|    O     |");
 
             Console.SetCursorPosition(left, top + 4);
-            Console.WriteLine("|__________|");
+            Console.WriteLine(" ----------");
         }
 
 
