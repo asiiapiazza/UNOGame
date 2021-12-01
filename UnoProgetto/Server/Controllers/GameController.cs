@@ -156,8 +156,24 @@ namespace UnoGame.Controllers
         //DA FARE
         void checkDiscardedCard(Card selectedCard)
         {
-            //controllo della carta scartata e la carta del mazzo
-            // _lastDiscardedCard = ultima carta scartata
+            //controllo della carta scartata e la carta del mazzo scarti
+            // _lastDiscardedCard = ultima carta scartata (nel mazzo scarti)
+            _lastDiscardedCard = _model.DiscardedHand.Last();
+
+            if (selectedCard.Color == _lastDiscardedCard.Color || selectedCard.Type == _lastDiscardedCard.Type)
+            {
+                _model.DiscardedHand.Add(selectedCard);
+            }
+            else if (selectedCard.Type == Models.Type.JOLLY)
+            {
+                _model.DiscardedHand.Add(selectedCard);
+            }
+            else 
+            {
+                //in inglese
+                Console.WriteLine("Pesca/Scegli un'altra carta!");
+            }
+
         }
 
 
@@ -165,18 +181,39 @@ namespace UnoGame.Controllers
         public void isWinner()
         {
             //controllare se il mazzo del giocatore è vuoto
+            //if (_model.PlayersHand[].Count == 0)
+            //{
+            //    Console.WriteLine("You Won!");
+            //}
         }
 
 
         //DA FARE
         //se posso scartare, tolgo dal deck del giocatore la carta e la agggiungo al
         //mazzo scarto. Se non posso scartare, pesco. Se ho pescato e non ho niente passo il turno
-        public void checkCardAvailability(PlayerView currentView, Message message)
+        public void checkCardAvailability(PlayerView currentView, Message message, Card selectedCard)
         {
             //controllo se la view  del player che passo è uguale alla view
             if (currentView != _views[_turn])
                 throw new InvalidOperationException();
-           
+
+            //controllo se posso scartare
+            _lastDiscardedCard = _model.DiscardedHand.Last();
+
+            
+            if (selectedCard.Color == _lastDiscardedCard.Color || selectedCard.Type == _lastDiscardedCard.Type)
+            {
+                //metodo seleziona carta (indice)
+                //_model.PlayersHand[].Remove(selectedCard);
+                _model.DiscardedHand.Add(selectedCard);
+            }
+            else if (selectedCard.Type == Models.Type.JOLLY)
+            {
+
+                //_model.PlayersHand[].Remove(selectedCard);
+                _model.DiscardedHand.Add(selectedCard);
+            }
+            //non possiamo sapere se non ha carte oppure se ha scelto una carta sbagliata (bottone per pescare)
 
         }
 
@@ -211,9 +248,21 @@ namespace UnoGame.Controllers
         public void checkDraw()
         {
             //usare _model
-            //se il mazzo da cui pescare è finitp
+            //se il mazzo da cui pescare è finito
             //richiamo il metodo che aggiunge il deck delle carte scartate
             //tranne l'ultima che ho scartato
+            _lastDiscardedCard = _model.DiscardedHand.Last();
+            var rnd = new Random();
+            var randomized = _model.UnoHand.OrderBy(a => Guid.NewGuid()).ToList();
+            
+
+            //stampare l'ultima carta del mazzo scarti
+            if (_model.UnoHand.Count == 0)
+            {
+                _model.DiscardedHand.Remove(_lastDiscardedCard);
+                _model.UnoHand = _model.DiscardedHand;
+                _model.UnoHand = randomized;
+            }
         }
 
 

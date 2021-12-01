@@ -28,6 +28,11 @@ namespace UnoGame.Views
 
         }
 
+        public PlayerView()
+        {
+
+        }
+
         //ho bisogno della socket e del controller di riferimento
         public PlayerView(Socket socket, GameController controller)
         {
