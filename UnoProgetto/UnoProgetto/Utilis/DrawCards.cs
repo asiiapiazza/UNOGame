@@ -183,7 +183,7 @@ namespace Client.Utilis
         internal void printArrowR()
         {
             Console.SetCursorPosition(30, 40);
-            Console.WriteLine("<-AAAAAAAAAAAAAAAAAAA");
+            Console.WriteLine("<--");
         }
         public void clearCurrentConsoleLine()
         {

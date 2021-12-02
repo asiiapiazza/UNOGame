@@ -14,7 +14,7 @@ namespace Client.Utilis
         {
 
             printHeader();
-            string[] menuItems = {"3 PLAYERS", "EXIT" };
+            string[] menuItems = {"2 PLAYERS", "EXIT" };
             var menu = new Menu();
             int option = menu.PrintOptions(menuItems);
             return option;

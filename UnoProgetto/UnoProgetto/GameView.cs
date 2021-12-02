@@ -90,7 +90,8 @@ namespace Client
             printDrawCard();
 
             //visione del mio deck
-            controller.scrollingHand(hand);
+
+            drawCards.printPlayerHand(hand);
 
 
         }
