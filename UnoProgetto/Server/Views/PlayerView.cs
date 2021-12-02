@@ -58,10 +58,7 @@ namespace UnoGame.Views
                 //da sostituire switchcase
                 switch (message.Type)
                 {
-                    //il gioco è iniziato
-                    case TypeMessage.START_GAME:
-                        _controller.Start();
-                        break;
+           
 
 
                     case TypeMessage.START_TURN:
