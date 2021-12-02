@@ -20,18 +20,15 @@ namespace UnoGame.Views
         private StreamReader _reader;
         private StreamWriter _writer;
         private GameController _controller;
-        internal List<Card> _hand = new List<Card>();
-        internal Card _lastDiscardedCard;
+        public List<Card> _hand = new List<Card>();
+
 
         public PlayerView()
         {
 
         }
 
-        public PlayerView()
-        {
-
-        }
+ 
 
         //ho bisogno della socket e del controller di riferimento
         public PlayerView(Socket socket, GameController controller)
@@ -62,20 +59,14 @@ namespace UnoGame.Views
                 switch (message.Type)
                 {
                     //il gioco è iniziato
-                    case TypeCard.START:
+                    case TypeMessage.START_GAME:
                         _controller.Start();
                         break;
 
 
-                    //il player ha selezionato la carta
-                    //prima di scartarla controlla se deve pescare
-                    //delle carte per i +4/+2
-                    
-                    case TypeCard.NEXT_TURN:
-
+                    case TypeMessage.START_TURN:
                         _controller.distribuiteCards(this);
-                        _controller.discardCard(message);
-                        _writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeCard.NEXT_TURN, Body = JsonSerializer.Serialize(_hand)}));
+                        _controller.discardCard(message);   
                         
                         break;
 
@@ -93,7 +84,10 @@ namespace UnoGame.Views
             _writer.WriteLine(JsonSerializer.Serialize(message));
         }
 
-      
+        internal void sendmessage(Message message)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 }

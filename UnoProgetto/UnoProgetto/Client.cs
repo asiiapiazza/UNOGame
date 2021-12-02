@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.Json;
 using UnoGame;
 using System.Threading.Tasks;
-using TypeCard = UnoGame.TypeCard;
+using TypeMessage = UnoGame.TypeMessage;
 using UnoGame.Models;
 
 namespace Client
@@ -43,12 +43,12 @@ namespace Client
             writer.AutoFlush = true;
 
 
-            Card selectedCard = new Card();
+            int cardIndex = 0;
 
 
             //deve aspettare che il server gli dica che si sia connesso un altro client
             //while true, deve continuare sempre a cercare qualche messaggio del server
-
+            GameModel model = new GameModel();
 
 
             while (true)
@@ -59,39 +59,41 @@ namespace Client
                 //deserializzo con la classe MESSAGE
                 var message = JsonSerializer.Deserialize<Message>(data);
 
-                List<Card> hand = new List<Card>();
+
                 //operazione da fare in base al tipo
 
                 switch (message.Type)
                 {
+                    
 
-                    //messaggi per la parte grafica
-                    case TypeCard.START:
-                        hand = JsonSerializer.Deserialize<List<Card>>(message.Body);
-                        selectedCard = view.Start(hand);
-                        writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeCard.NEXT_TURN, Body = JsonSerializer.Serialize(selectedCard) }));
+                    
+                    case TypeMessage.START_TURN:
+                        model = JsonSerializer.Deserialize<GameModel>(message.Body);
+                        cardIndex = view.View(model, message.MyHand);
+                        Console.WriteLine("1");
+                        writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeMessage.START_TURN, Body = JsonSerializer.Serialize(cardIndex), MyHand=message.MyHand }));
+                        break;
+            
+
+                    case TypeMessage.MODEL_UPDATE:
+                        model = JsonSerializer.Deserialize<GameModel>(message.Body);
+                        view.Start(model, message.MyHand);
+
+                        view.WaitYourTurn();
                         break;
 
-                        //SELEZIONE DELLA CARTA
-                    case TypeCard.NEXT_TURN:
-                        hand = JsonSerializer.Deserialize<List<Card>>(message.Body);
-                        view.updateView(hand);
-                        selectedCard = view.SelectCard();
-                        writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeCard.NEXT_TURN, Body = JsonSerializer.Serialize(selectedCard) }));
+                    case TypeMessage.WAITING_TURN:    
+                        model = JsonSerializer.Deserialize<GameModel>(message.Body);
 
-                        
+                        view.WaitYourTurn();
                         break;
-             
-                    //PESCARE DELLE CARTE
-                    case TypeCard.DRAW_CARDS:
-                        view.updateView(hand);
-                        
-                        break;
-                    case TypeCard.WIN:
+
+                    case TypeMessage.WIN:
                         //devo passare il giocatore del CLIENT
                         view.hasWon();
                         break;
-                    case TypeCard.LOSE:
+
+                    case TypeMessage.LOSE:
                         view.hasLost();
                         break;
 

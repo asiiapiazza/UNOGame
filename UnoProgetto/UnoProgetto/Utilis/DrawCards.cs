@@ -107,11 +107,13 @@ namespace Client.Utilis
         {
             int top = 0;
             int left = 30;
-            for (int i = 0; i < nCards; i++)
+            for (int i = 0; i < 7; i++)
             {
                 coveredCard(left, top);
                 left += 10;
             }
+
+    
             
         }
 
@@ -119,12 +121,18 @@ namespace Client.Utilis
         {
             int left = 0;
             int top = 1;
-            for (int i = 0; i < nCards; i++)
+            for (int i = 0; i < 7; i++)
             {
                 coveredHorizontalCard(left, top);
                 top += 5;
             }
 
+            if (nCards > 7)
+            {
+
+                //da definire posizione
+                Console.WriteLine("+" + (nCards - 7));
+            }
         }
 
 
@@ -136,13 +144,29 @@ namespace Client.Utilis
 
 
         //a seconda del numero di giocatori, la posizione del deck degli avversari cambia
-        public void printPlayerHand(List<Card> hand, int startIndex, int endIndex)
+        public void printPlayerScrollView(List<Card> hand, int startIndex, int endIndex)
         {
 
 
             int top = 37;
             int left = 30;
             for (int i = startIndex; i <=endIndex; i++)
+            {
+                printCard(hand[i], left, top);
+                left += 10;
+
+            }
+
+        }
+
+
+        public void printPlayerHand(List<Card> hand)
+        {
+
+
+            int top = 37;
+            int left = 30;
+            for (int i = 0; i < hand.Count; i++)
             {
                 printCard(hand[i], left, top);
                 left += 10;
@@ -159,7 +183,7 @@ namespace Client.Utilis
         internal void printArrowR()
         {
             Console.SetCursorPosition(30, 40);
-            Console.WriteLine("<--");
+            Console.WriteLine("<-AAAAAAAAAAAAAAAAAAA");
         }
         public void clearCurrentConsoleLine()
         {

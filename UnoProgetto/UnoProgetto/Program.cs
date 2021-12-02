@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Text.Json;
 using UnoGame;
 using UnoGame.Models;
-using Type = UnoGame.TypeCard;
+using Type = UnoGame.TypeMessage;
 
 namespace Client
 {
@@ -25,15 +25,22 @@ namespace Client
             int option =  menu.Print();
 
             //se premo le altre opzioni
-            while (option != 0)
+            
+            switch (option)
             {
-                        
-                
+                case 0:
+                    //se premo opzione 0, quindi 3 players
+                    Client.StartClient();
+                    break;
+
+                case 1:
+
+                    break;
+         
+
+
             }
 
-
-            //se premo opzione 0, quindi 3 players
-            Client.StartClient();
 
         }
 

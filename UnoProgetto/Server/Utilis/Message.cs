@@ -11,22 +11,20 @@ namespace UnoGame
     public class Message
     {
 
-        public TypeCard Type { get; set; }
+        public TypeMessage Type { get; set; }
         public string Body { get; set; }
-
-
+        public List<Card> MyHand { get; set; }
 
     }
 
 
     //SELECT_CARD = NEXT_TURN
-    public enum TypeCard
+    public enum TypeMessage
     {
-        DRAW_CARDS,
-        START,
-       
-        NEXT_TURN,
-        SAID_UNO,
+        START_GAME,
+        START_TURN,
+        MODEL_UPDATE,
+        WAITING_TURN,
         WIN,
         LOSE
     }

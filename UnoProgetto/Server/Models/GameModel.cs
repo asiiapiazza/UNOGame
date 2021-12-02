@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using UnoGame.Views;
 
 namespace UnoGame.Models
@@ -12,7 +13,6 @@ namespace UnoGame.Models
        
         public List<Card> UnoHand { get; set; } 
         public List<Card> DiscardedHand { get; set; } 
-        //public List<Card>[] PlayersHand { get; set ; }
         public List<PlayerView> Views { get; set; }
         
 
@@ -21,7 +21,6 @@ namespace UnoGame.Models
         public GameModel()
         {
             initalizeUnoDeck();
-            //initializePlayersHand();
             Views = new List<PlayerView>();
             DiscardedHand = new List<Card>();
         }
@@ -173,58 +172,30 @@ namespace UnoGame.Models
         }
 
 
-        ////FATTO
-        //private void initializePlayersHand()
-        //{
-        //    PlayersHand = new List<Card>[3];
-        //    PlayersHand[0] = new List<Card>();
-        //    PlayersHand[1] = new List<Card>();
-        //    PlayersHand[2] = new List<Card>();
-        //}
-
-        public void discardCardFromMyHand(Card card,  List<Card> playerHand)
-        {
-            playerHand.Remove(card);
-            DiscardedHand.Add(card);
-
-            //aggiorna il model + nexturn
-            Notify(new Message { Type = TypeCard.NEXT_TURN });
-        }
-
 
         //FATTO
-        public void playSelectedCard(Card card, List<Card> playerHand)
+        public void discardCardFromMyHand(int index, List<Card> playerHand)
         {
-            //1 carta rimossa dal mazzo del giocatore
-            playerHand.Remove(card);
+
+            var card = playerHand[index];
             DiscardedHand.Add(card);
-            Notify(new Message { Type = TypeCard.NEXT_TURN });
+            playerHand.RemoveAt(index);
+
+
         }
+
 
         //FATTO
         public void drawFromDrawHand(List<Card> playerHand)
         {
-            //2 pesco dal mazzo pesca e aggiungo al giocatore
             var card = UnoHand.Last();
             UnoHand.Remove(card);
             playerHand.Add(card);
 
-            //controllo se posso mettere giu un altra carta oppure saltare il turno
-            Notify(new Message { Type = TypeCard.NEXT_TURN });
+           
         }
 
-
-        //da capire
-        private void Notify(Message msg)
-        {
-            foreach (var view in Views)
-            {
-               
-                view.SendMessage(msg);
-            }
-        }
-
-
+        //FATTO
         public void AddView(PlayerView view)
         {
             Views.Add(view);

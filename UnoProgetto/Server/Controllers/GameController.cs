@@ -18,7 +18,7 @@ namespace UnoGame.Controllers
         private int _turn;
         public GameModel _model;
         private Card _lastDiscardedCard;
-        int n = 0;
+    
 
         public GameController(GameModel model)
         {
@@ -43,24 +43,24 @@ namespace UnoGame.Controllers
         public void Start()
         {
             //metodo che distribuisce 7 carte ad ogni giocatore della view
+            var rnw = new Random();
+            _turn = rnw.Next(0, 2);
             starterHands();
             firstDiscardedCard();
             //serializzazione, manda messaggio al server di INIZIARE IL GIOCO
 
-            foreach (var view in _views)
-            {
+            var opponentviews = _views.Where(t => t != _views[_turn]).ToList();
 
-                view.SendMessage(new Message { Type = TypeCard.START, Body = JsonSerializer.Serialize<List<Card>>(view._hand) });
-                view.SendMessage(new Message { Type = TypeCard.START, Body = JsonSerializer.Serialize<Card>(view._lastDiscardedCard) });
-                n++;
+            foreach (var item in opponentviews)
+            {
+                item.SendMessage(new Message { Type = TypeMessage.WAITING_TURN, Body = JsonSerializer.Serialize(_model), MyHand = item._hand});
+
 
             }
 
-            //TESTING
-            //manda messaggio di inizio al giocatore 0
-            _model.Views[0].SendMessage(new Message { Type = TypeCard.START, Body = JsonSerializer.Serialize<GameModel>(_model)});
+            _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, Body = JsonSerializer.Serialize(_model), MyHand = _views[_turn]._hand });
 
-           
+
         }
 
 
@@ -132,7 +132,7 @@ namespace UnoGame.Controllers
         {
             for (int i = 0; i < nCardsToDraw; i++)
             {
-                _model.drawFromDrawHand(_model.Views[n]._hand);
+                _model.drawFromDrawHand(_model.Views[_turn]._hand);
             }
         }
  
@@ -145,129 +145,141 @@ namespace UnoGame.Controllers
         public void discardCard(Message message)
         {
            
-            var selectedCard = JsonSerializer.Deserialize<Card>(message.Body);
-            checkDiscardedCard(selectedCard);
-            _model.discardCardFromMyHand(selectedCard, _model.Views[n]._hand);
-     
-        }
+            var index = JsonSerializer.Deserialize<int>(message.Body);
+            var playerHand = message.MyHand;
 
+            bool discarded = checkDiscardedCard(index, playerHand);
 
-
-        //DA FARE
-        void checkDiscardedCard(Card selectedCard)
-        {
-            //controllo della carta scartata e la carta del mazzo scarti
-            // _lastDiscardedCard = ultima carta scartata (nel mazzo scarti)
-            _lastDiscardedCard = _model.DiscardedHand.Last();
-
-            if (selectedCard.Color == _lastDiscardedCard.Color || selectedCard.Type == _lastDiscardedCard.Type)
+            //se la carta che vuole sccartare non  va bene, riprova a scartare
+            if (discarded != true)
             {
-                _model.DiscardedHand.Add(selectedCard);
-            }
-            else if (selectedCard.Type == Models.Type.JOLLY)
-            {
-                _model.DiscardedHand.Add(selectedCard);
-            }
-            else 
-            {
-                //in inglese
-                Console.WriteLine("Pesca/Scegli un'altra carta!");
-            }
-
-        }
-
-
-        //DA FARE
-        public void isWinner()
-        {
-            //controllare se il mazzo del giocatore è vuoto
-            //if (_model.PlayersHand[].Count == 0)
-            //{
-            //    Console.WriteLine("You Won!");
-            //}
-        }
-
-
-        //DA FARE
-        //se posso scartare, tolgo dal deck del giocatore la carta e la agggiungo al
-        //mazzo scarto. Se non posso scartare, pesco. Se ho pescato e non ho niente passo il turno
-        public void checkCardAvailability(PlayerView currentView, Message message, Card selectedCard)
-        {
-            //controllo se la view  del player che passo è uguale alla view
-            if (currentView != _views[_turn])
-                throw new InvalidOperationException();
-
-            //controllo se posso scartare
-            _lastDiscardedCard = _model.DiscardedHand.Last();
-
-            
-            if (selectedCard.Color == _lastDiscardedCard.Color || selectedCard.Type == _lastDiscardedCard.Type)
-            {
-                //metodo seleziona carta (indice)
-                //_model.PlayersHand[].Remove(selectedCard);
-                _model.DiscardedHand.Add(selectedCard);
-            }
-            else if (selectedCard.Type == Models.Type.JOLLY)
-            {
-
-                //_model.PlayersHand[].Remove(selectedCard);
-                _model.DiscardedHand.Add(selectedCard);
-            }
-            //non possiamo sapere se non ha carte oppure se ha scelto una carta sbagliata (bottone per pescare)
-
-        }
-
-        /// <summary>
-        /// questo metodo prende il numero di giocatori che partecipano
-        /// e incrementa il turno del giocatore successivo
-        /// </summary>
-        private void nextTurn()
-        {
-            
-       
-            if (_turn ==2)
-            {
-                _turn = 0;
-                
+                StartTurn();
             }
             else
             {
+              
 
-                _turn += 1;
+                nextTurn();
+                StartTurn();
             }
-
+          
 
         }
 
+   
+        //FATTO
+        bool checkDiscardedCard(int indexCard, List<Card> playerHand)
+        {
+       
+            _lastDiscardedCard = _model.DiscardedHand.Last();
+            var selectedCard = playerHand[indexCard];
+            bool discardedBool = false;
+
+            if (selectedCard.Color == _lastDiscardedCard.Color || selectedCard.Type == _lastDiscardedCard.Type)
+            {
+                discardedBool = true;
+                _model.discardCardFromMyHand(indexCard, playerHand);
+            }
+            else if (selectedCard.Type == Models.Type.JOLLY)
+            {
+                discardedBool = true;
+                _model.discardCardFromMyHand(indexCard, playerHand);
+            }
+            else if (selectedCard.Type == Models.Type.CHANGE_COLOR)
+            {
+
+                discardedBool = true;
+            }
+            else 
+            {
+
+                discardedBool = false;
+                Console.WriteLine("Draw/Choose another card!");
+            }
+
+            return discardedBool;
+        }
+
+
+        //DA FARE
+        public void isWinner(List<Card> hand)
+        {
+            //controllare se il mazzo del giocatore è vuoto
+            if (hand.Count == 0)
+            {
+                Console.WriteLine("You Won!");
+            }
+        }
+
+
+       
         //DA FARE
         public void invertTurnOrder()
         {
-
+            
         }
 
-        public void checkDraw()
+
+        public void altCard()
+        {
+            _turn++;
+        }
+
+        public void checkDrawDeck()
         {
             //usare _model
             //se il mazzo da cui pescare è finito
             //richiamo il metodo che aggiunge il deck delle carte scartate
             //tranne l'ultima che ho scartato
-            _lastDiscardedCard = _model.DiscardedHand.Last();
-            var rnd = new Random();
-            var randomized = _model.UnoHand.OrderBy(a => Guid.NewGuid()).ToList();
-            
-
             //stampare l'ultima carta del mazzo scarti
+
             if (_model.UnoHand.Count == 0)
             {
+                _lastDiscardedCard = _model.DiscardedHand.Last();
+                var rnd = new Random();
+                var randomized = _model.UnoHand.OrderBy(a => Guid.NewGuid()).ToList();
                 _model.DiscardedHand.Remove(_lastDiscardedCard);
                 _model.UnoHand = _model.DiscardedHand;
                 _model.UnoHand = randomized;
             }
         }
 
-
+    
      
+        private void StartTurn()
+        {
+            var opponentviews = _views.Where(t => t != _views[_turn]).ToList();
+
+            foreach (var item in opponentviews)
+            {
+                //arriva messaggio update e waiting
+                item.SendMessage(new Message { Type = TypeMessage.MODEL_UPDATE, Body = JsonSerializer.Serialize(_model), MyHand = item._hand });
+             
+            }
+
+            _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, Body = JsonSerializer.Serialize(_model), MyHand = _views[_turn]._hand });
+     
+        }
 
 
+        private void nextTurn()
+        {
+
+
+            //if (_turn == 2)
+            //{
+            //    _turn = 0;
+
+            //}
+            //else
+            //{
+
+            //    _turn += 1;
+            //}
+
+            _turn = (_turn + 1) % 2;
+
+
+        }
     }
 }

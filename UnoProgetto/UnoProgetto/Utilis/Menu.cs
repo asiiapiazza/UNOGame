@@ -14,29 +14,13 @@ namespace Client.Utilis
         {
 
             printHeader();
-            string[] menuItems = {"3 PLAYERS", "RULES", "EXIT" };
+            string[] menuItems = {"3 PLAYERS", "EXIT" };
             var menu = new Menu();
             int option = menu.PrintOptions(menuItems);
             return option;
         }
 
-        //public int NumberOfPlayers(int n)
-        //{
-        //    int Nplayers = 0;
-        //    switch (n)
-        //    {
-        //        case 0:
-        //            Nplayers = 2;
-                 
-        //            break;
-        //        default:
-        //            Nplayers = 3;
-        //            break;
-        //    }
-
-        //    return Nplayers;
-        //}
-
+       
 
         private int PrintOptions(string[] menuItems)
         {
@@ -96,7 +80,7 @@ namespace Client.Utilis
 
             return cursorPosition;
         }
-        public void printHeader()
+        internal void printHeader()
         {
 
             Console.ForegroundColor = ConsoleColor.Magenta;
@@ -109,7 +93,7 @@ namespace Client.Utilis
             Console.ResetColor();
 
         }
-
+      
 
     }
 }
