@@ -35,7 +35,7 @@ namespace Client
                     break;
 
                 case 1:
-
+                    Environment.Exit(0);
                     break;
          
 

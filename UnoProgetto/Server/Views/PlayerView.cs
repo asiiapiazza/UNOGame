@@ -47,13 +47,26 @@ namespace UnoGame.Views
         //la view deve notificare il controller
         public void Run()
         {
+            string data;
+            Message message = new Message();
             while (true)
             {
-
                 //aspetta messaggio del client
-                var data = _reader.ReadLine();
-                var message = JsonSerializer.Deserialize<Message>(data);
-          
+                try
+                {
+
+                    data = _reader.ReadLine();
+
+                    message = JsonSerializer.Deserialize<Message>(data);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Server Error: client disconnected");
+                    //SendMessage(new Message { Type = TypeMessage.CLIENT_DISCONNECTED });
+                    Environment.Exit(0);
+                }
+
+
 
                 //da sostituire switchcase
                 switch (message.Type)
@@ -85,7 +98,9 @@ namespace UnoGame.Views
         //scrivere sulla socket il messaggio serializzato
         public void SendMessage(Message message)
         {
-            _writer.WriteLine(JsonSerializer.Serialize(message));
+
+                _writer.WriteLine(JsonSerializer.Serialize(message));
+            
         }
 
 

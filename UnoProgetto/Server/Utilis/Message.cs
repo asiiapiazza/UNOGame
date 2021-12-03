@@ -28,6 +28,7 @@ namespace UnoGame
         MODEL_UPDATE,
         WAITING_TURN,
         WIN,
-        LOSE
+        LOSE,
+        CLIENT_DISCONNECTED
     }
 }
