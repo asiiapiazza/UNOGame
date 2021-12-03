@@ -49,6 +49,9 @@ namespace Client
             //deve aspettare che il server gli dica che si sia connesso un altro client
             //while true, deve continuare sempre a cercare qualche messaggio del server
             GameModel model = new GameModel();
+            Console.WriteLine("Wait for other players!");
+
+            
 
 
             while (true)
