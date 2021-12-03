@@ -20,6 +20,7 @@ namespace Client
             //STAMPA DEL MENU
             Console.CursorVisible = false;
             Menu menu = new Menu();
+            Client client = new Client();
             PlayerController controller = new PlayerController();
 
             int option =  menu.Print();
@@ -30,7 +31,7 @@ namespace Client
             {
                 case 0:
                     //se premo opzione 0, quindi 3 players
-                    Client.StartClient();
+                    client.StartClient();
                     break;
 
                 case 1:

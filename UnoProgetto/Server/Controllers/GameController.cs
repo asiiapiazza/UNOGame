@@ -11,11 +11,9 @@ namespace UnoGame.Controllers
 {
     public class GameController
     {
-        //array di giocatore
-
       
         private PlayerView[] _views;
-        private int _turn;
+        public int _turn;
         public GameModel _model;
         private Card _lastDiscardedCard;
     
@@ -23,7 +21,7 @@ namespace UnoGame.Controllers
         public GameController(GameModel model)
         {
             _model = model;
-            _views = new PlayerView[2];
+            _views = new PlayerView[3];
             _turn = 0;
 
         }
@@ -42,28 +40,120 @@ namespace UnoGame.Controllers
         //vengono richiamati dei metodi nel GameModel per la gestione dei deck       
         public void Start()
         {
-            //metodo che distribuisce 7 carte ad ogni giocatore della view
             var rnw = new Random();
             _turn = rnw.Next(0, 2);
-            starterHands();
-            firstDiscardedCard();
-            //serializzazione, manda messaggio al server di INIZIARE IL GIOCO
 
+
+            //metodo che distribuisce 7 carte ad ogni giocatore della view
+            starterHands();
+
+            //scelgo la prima carta dal deck scarta
+            firstDiscardedCard();
+
+         
+            //LINQ per trovare gli avversari
             var opponentviews = _views.Where(t => t != _views[_turn]).ToList();
 
-            foreach (var item in opponentviews)
-            {
-                item.SendMessage(new Message { Type = TypeMessage.WAITING_TURN, Body = JsonSerializer.Serialize(_model), MyHand = item._hand});
+            //restituisce il numero di carte che hanno gli avversari
+            var nOpponentsCards = oppponentsViewCards(opponentviews);
+
+            //messaggio di startare il turno (scelta della carta)
+            _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, MyHand = _views[_turn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last() });
 
 
-            }
-
-            _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, Body = JsonSerializer.Serialize(_model), MyHand = _views[_turn]._hand });
+            opponentsViews();
+       
 
 
         }
 
+        /// <summary>
+        /// metodo che mi restituisce il numero di carte che hanno gli avversari
+        /// </summary>
+        /// <param name="playerViews"></param>
+        /// <returns></returns>
+        internal List<int> oppponentsViewCards(List<PlayerView> playerViews)
+        {
+            List<int> nCardsOpponents = new List<int>();
+            foreach (var item in playerViews)
+            {
+                nCardsOpponents.Add(item._hand.Count);
+            }
 
+            return nCardsOpponents;
+        }
+
+        //il giocatore del turno vede i mazzi avversari coperti, ma gli avversasi non vedono il mazzo degli avversari coperti. Utilizzo metodo separato
+        private void opponentsViews()
+        {
+            List<int> nOpponentsCards = new List<int>();
+            var opponentviews = new List<PlayerView>();
+            int opponentTurn = 0;
+        
+            switch (_turn)
+            {
+                //turno del giocatore 0
+                case 0:
+
+                    //view giocatore 1
+                    opponentTurn = _turn + 1;
+                     opponentviews = _views.Where(t => t != _views[opponentTurn]).ToList();
+                    nOpponentsCards = oppponentsViewCards(opponentviews);
+                    _views[opponentTurn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN,  MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last() });
+
+                    //view giocatore 2
+                    opponentTurn = _turn + 2;
+                    opponentviews = _views.Where(t => t != _views[opponentTurn]).ToList();
+                    nOpponentsCards = oppponentsViewCards(opponentviews);
+                    _views[opponentTurn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN,  MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last() });
+                    break;
+
+
+                //turno del giocatore 1
+                case 1:
+
+                    //view giocatore 2
+                    opponentTurn = _turn + 1;
+                    opponentviews = _views.Where(t => t != _views[opponentTurn]).ToList();
+                    nOpponentsCards = oppponentsViewCards(opponentviews);
+                    _views[opponentTurn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN,  MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last() });
+
+                    //view giocatore 0
+                    opponentTurn = _turn - 1;
+                    opponentviews = _views.Where(t => t != _views[opponentTurn]).ToList();
+                    nOpponentsCards = oppponentsViewCards(opponentviews);
+                    _views[opponentTurn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last() });
+
+
+                    break;
+
+                //turno del giocatore 2
+                case 2:
+
+                    //view giocatore 1
+                    opponentTurn = _turn - 1;
+                    opponentviews = _views.Where(t => t != _views[opponentTurn]).ToList();
+                    nOpponentsCards = oppponentsViewCards(opponentviews);
+                    _views[opponentTurn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN,  MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last() });
+
+                    //view giocatore 0
+                    opponentTurn = _turn - 2;
+                    opponentviews = _views.Where(t => t != _views[opponentTurn]).ToList();
+                    nOpponentsCards = oppponentsViewCards(opponentviews);
+                    _views[opponentTurn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last() });
+
+                    break;
+                default:
+                    break;
+            }
+        
+           
+         
+
+        
+
+            
+        }
         //DA FARE
 
         /// <summary>
@@ -74,6 +164,7 @@ namespace UnoGame.Controllers
         ///rimessa a caso nel "mazzo pesca" e sostituita con un'altra.
         /// </summary>
         /// <returns></returns>
+        /// 
         private void firstDiscardedCard()
         {
             _model.DiscardedHand.Add(_model.UnoHand.Last());
@@ -93,13 +184,17 @@ namespace UnoGame.Controllers
                 for (int j = 0; j < 7; j++)
                 {
                     //prendo la carta in cima al mazzo coperta
-                    cardFromUnoHand = _model.UnoHand.Last();
+                    cardFromUnoHand = _model.UnoHand[_model.UnoHand.Count-1];
+
+                    //rimuovo carta dal deck
+                    _model.UnoHand.RemoveAt(_model.UnoHand.Count-1);
+
 
                     //aggiungo carta al deck del giocatore
                     _model.Views[i]._hand.Add(cardFromUnoHand);
 
-                    //rimuovo carta dal deck
-                    _model.UnoHand.Remove(cardFromUnoHand);
+        
+                    
                 }
             }
 
@@ -132,7 +227,7 @@ namespace UnoGame.Controllers
         {
             for (int i = 0; i < nCardsToDraw; i++)
             {
-                _model.drawFromDrawHand(_model.Views[_turn]._hand);
+                _model.drawFromDrawHand( _turn);
             }
         }
  
@@ -145,20 +240,21 @@ namespace UnoGame.Controllers
         public void discardCard(Message message)
         {
            
-            var index = JsonSerializer.Deserialize<int>(message.Body);
+            var card = JsonSerializer.Deserialize<Card>(message.Body);
             var playerHand = message.MyHand;
 
-            bool discarded = checkDiscardedCard(index, playerHand);
+            
+            bool discarded = checkDiscardedCard(card, playerHand);
 
+            
             //se la carta che vuole sccartare non  va bene, riprova a scartare
-            if (discarded != true)
+            if (!discarded)
             {
                 StartTurn();
             }
             else
             {
               
-
                 nextTurn();
                 StartTurn();
             }
@@ -168,34 +264,39 @@ namespace UnoGame.Controllers
 
    
         //FATTO
-        bool checkDiscardedCard(int indexCard, List<Card> playerHand)
+        bool checkDiscardedCard(Card selectedCard, List<Card> playerHand)
         {
        
             _lastDiscardedCard = _model.DiscardedHand.Last();
-            var selectedCard = playerHand[indexCard];
+            
             bool discardedBool = false;
 
-            if (selectedCard.Color == _lastDiscardedCard.Color || selectedCard.Type == _lastDiscardedCard.Type)
-            {
-                discardedBool = true;
-                _model.discardCardFromMyHand(indexCard, playerHand);
-            }
-            else if (selectedCard.Type == Models.Type.JOLLY)
-            {
-                discardedBool = true;
-                _model.discardCardFromMyHand(indexCard, playerHand);
-            }
-            else if (selectedCard.Type == Models.Type.CHANGE_COLOR)
-            {
+               
+                if (selectedCard.Color == _lastDiscardedCard.Color || selectedCard.Type == _lastDiscardedCard.Type || _lastDiscardedCard.Type== Models.Type.JOLLY || selectedCard.Type == Models.Type.DRAW_FOUR || selectedCard.Type == Models.Type.JOLLY)
+                {
+                    discardedBool = true;
+                    _model.discardCardFromMyHand(selectedCard, _turn);
+                    Console.WriteLine("Card discarded");
+                }
+              
+                else if (selectedCard.Type == Models.Type.CHANGE_COLOR)
+                {
 
-                discardedBool = true;
-            }
-            else 
-            {
+                    discardedBool = true;
+                }
+                else
+                {
 
-                discardedBool = false;
-                Console.WriteLine("Draw/Choose another card!");
-            }
+                    discardedBool = false;
+                    Console.WriteLine("Draw/Choose another card!");
+                }
+            
+            //else
+            //{
+            //    _model.drawFromDrawHand(playerHand);
+            //    Console.WriteLine("Player drew from draw deck");
+            //}
+            
 
             return discardedBool;
         }
@@ -249,35 +350,38 @@ namespace UnoGame.Controllers
         private void StartTurn()
         {
             var opponentviews = _views.Where(t => t != _views[_turn]).ToList();
+            List<int> nOpponentsCards = oppponentsViewCards(opponentviews);
 
-            foreach (var item in opponentviews)
-            {
-                //arriva messaggio update e waiting
-                item.SendMessage(new Message { Type = TypeMessage.MODEL_UPDATE, Body = JsonSerializer.Serialize(_model), MyHand = item._hand });
-             
-            }
-
-            _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, Body = JsonSerializer.Serialize(_model), MyHand = _views[_turn]._hand });
+            opponentsViews();  
+            //se turno è uguale a 1, so che il player 
+            _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, MyHand = _views[_turn]._hand, lastDiscardeCard = _model.DiscardedHand.Last(), nOpponentCards = nOpponentsCards });
      
         }
 
+        internal void drawFromDrawDeck(Message message)
+        {
 
+            var card = JsonSerializer.Deserialize<Card>(message.Body);
+            _model.drawFromDrawHand(_turn);
+
+
+        }
         private void nextTurn()
         {
 
 
-            //if (_turn == 2)
-            //{
-            //    _turn = 0;
+            if (_turn == 2)
+            {
+                _turn = 0;
 
-            //}
-            //else
-            //{
+            }
+            else
+            {
 
-            //    _turn += 1;
-            //}
+                _turn += 1;
+            }
 
-            _turn = (_turn + 1) % 2;
+            //_turn = (_turn + 1) % 2;
 
 
         }

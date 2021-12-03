@@ -53,21 +53,28 @@ namespace UnoGame.Views
                 //aspetta messaggio del client
                 var data = _reader.ReadLine();
                 var message = JsonSerializer.Deserialize<Message>(data);
-
+          
 
                 //da sostituire switchcase
                 switch (message.Type)
                 {
            
-
-
                     case TypeMessage.START_TURN:
                         _controller.distribuiteCards(this);
-                        _controller.discardCard(message);   
-                        
+                        _controller.discardCard(message);                          
                         break;
 
+                    case TypeMessage.WIN:
 
+                     break;
+
+                    case TypeMessage.LOSE:
+
+                        break;
+
+                    case TypeMessage.DRAW_CARD:
+                        _controller.discardCard(message);
+                        break;
                     default:
                         Console.WriteLine($"{message.Type} not supported");
                         break;
@@ -81,10 +88,8 @@ namespace UnoGame.Views
             _writer.WriteLine(JsonSerializer.Serialize(message));
         }
 
-        internal void sendmessage(Message message)
-        {
-            throw new NotImplementedException();
-        }
+
+
     }
 
 }

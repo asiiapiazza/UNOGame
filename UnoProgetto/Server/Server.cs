@@ -13,7 +13,7 @@ namespace UnoGame
     {
         public static void Main(string[] args)
         {
-            int nP = 2;
+            int nP = 3;
             var model = new GameModel();
             var controller = new GameController(model);
             var ipe = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8080);
@@ -22,11 +22,9 @@ namespace UnoGame
             listener.Listen(10);
             Console.WriteLine("Server listening on port 8080");
 
-            //ho bisogno di dude task: uno per la comunicazione con client0 e una con client1
-            //creo un array di tasks
+            //N tasks a seconda del numero di player
             var tasks = new Task[nP];
 
-            //ciclo dove ascolto per due volte
             
             for (int i = 0; i < nP; i++)
             {
@@ -46,8 +44,6 @@ namespace UnoGame
 
                 //assegno il task. questa visione virtuale del giocatore si mette in attesa pronta
                 //ad ascoltare i messaggi da parte del client.
-                
-
 
                 //GLI PASSO IL METODO PER ASCOLTARE PER SEMPRE
                 tasks[i] = Task.Run(view.Run);

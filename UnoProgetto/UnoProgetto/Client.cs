@@ -17,10 +17,13 @@ namespace Client
     public class Client
     {
         //view di un player
-      
-        //rendere la view una variabile utilizzabile da tutte le classi del client
 
-        public static void StartClient()
+        //rendere la view una variabile utilizzabile da tutte le classi del client
+        private Socket socket;
+        private StreamReader reader;
+        private StreamWriter writer;
+
+        public  void StartClient()
         {
             var view = new GameView();
 
@@ -29,63 +32,58 @@ namespace Client
 
             //creo una nuova socket che prende l'indirizzo ip dell'endpoint. Le socket possono essere di diversi tipi
             //stream vuol dire che i dati vengono mandati con bit e il protocollo tcp
-            var socket = new Socket(ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            socket = new Socket(ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
             //il client è attivo quindi si connette alla socket
             socket.Connect(ipe);
 
 
             //inizializzo un reader e un writer per scrivere sulla socket
-            var reader = new StreamReader(new NetworkStream(socket));
+            reader = new StreamReader(new NetworkStream(socket));
 
             //stream reader che legge direttamente dalla SOCKET
             var writer = new StreamWriter(new NetworkStream(socket));
             writer.AutoFlush = true;
 
 
-            int cardIndex = 0;
-
-
-            //deve aspettare che il server gli dica che si sia connesso un altro client
-            //while true, deve continuare sempre a cercare qualche messaggio del server
-            GameModel model = new GameModel();
+            Card selectedCard = new Card() ;
 
 
             while (true)
             {
                 //aggiunto dopo, leggere cosa mi dice il server. Operazione bloccante, se non c'è niente rimane in atesa
+                //try catch
                 var data = reader.ReadLine();
 
                 //deserializzo con la classe MESSAGE
-                var message = JsonSerializer.Deserialize<Message>(data);
-
+                 var message = JsonSerializer.Deserialize<Message>(data);
 
                 //operazione da fare in base al tipo
 
                 switch (message.Type)
                 {
-                    
-
-                    
+                                       
                     case TypeMessage.START_TURN:
-                        model = JsonSerializer.Deserialize<GameModel>(message.Body);
-                        cardIndex = view.View(model, message.MyHand);
-                        Console.WriteLine("1");
-                        writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeMessage.START_TURN, Body = JsonSerializer.Serialize(cardIndex), MyHand=message.MyHand }));
+
+                        //mando tutto model = modificare le variabili in message
+       
+                        selectedCard = view.SelectionView(message.nOpponentCards, message.MyHand, message.lastDiscardeCard);          
+                        writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeMessage.START_TURN, Body = JsonSerializer.Serialize(selectedCard) }));
                         break;
             
 
                     case TypeMessage.MODEL_UPDATE:
-                        model = JsonSerializer.Deserialize<GameModel>(message.Body);
-                        view.Start(model, message.MyHand);
-
-                        view.WaitYourTurn();
+                        view.View(message.nOpponentCards, message.MyHand, message.lastDiscardeCard);
                         break;
 
-                    case TypeMessage.WAITING_TURN:    
-                        model = JsonSerializer.Deserialize<GameModel>(message.Body);
+                    case TypeMessage.WAITING_TURN:
 
-                        view.WaitYourTurn();
+                        view.View(message.nOpponentCards, message.MyHand, message.lastDiscardeCard);
+                        break;
+
+                    case TypeMessage.DRAW_CARD:
+                        selectedCard = JsonSerializer.Deserialize<Card>(message.Body);
+
                         break;
 
                     case TypeMessage.WIN:
@@ -102,7 +100,15 @@ namespace Client
                         break;
                 }
             }
+
+
         }
+
+        public void SendMessage(Message message)
+        {
+            writer.WriteLine(JsonSerializer.Serialize(message));
+        }
+
 
 
     }

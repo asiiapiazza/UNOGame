@@ -174,25 +174,25 @@ namespace UnoGame.Models
 
 
         //FATTO
-        public void discardCardFromMyHand(int index, List<Card> playerHand)
+        public void discardCardFromMyHand(Card selectedCard, int turn)
         {
 
-            var card = playerHand[index];
-            DiscardedHand.Add(card);
-            playerHand.RemoveAt(index);
+            DiscardedHand.Add(selectedCard);
+            Views[turn]._hand.Remove(selectedCard);
+
 
 
         }
 
 
         //FATTO
-        public void drawFromDrawHand(List<Card> playerHand)
+        public void drawFromDrawHand(int turn)
         {
             var card = UnoHand.Last();
             UnoHand.Remove(card);
-            playerHand.Add(card);
+            Views[turn]._hand.Add(card);
 
-           
+
         }
 
         //FATTO

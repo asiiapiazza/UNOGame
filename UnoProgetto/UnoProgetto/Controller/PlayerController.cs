@@ -13,18 +13,19 @@ namespace Client.Controller
     {
 
         DrawCard draw = new DrawCard();
+        Client client = new Client();
         internal int selectCard(List<Card> hand)
         {
 
             //TEST SCORRIMENTO
-            // Card cc = new Card(UnoGame.Models.Type.EIGHT, Color.BLUE);
-            // hand.Add(cc);
+            //Card cc = new Card(UnoGame.Models.Type.EIGHT, Color.BLUE);
+            //hand.Add(cc);
 
-            // Card cc1 = new Card(UnoGame.Models.Type.EIGHT, Color.RED);
-            // hand.Add(cc1);
+            //Card cc1 = new Card(UnoGame.Models.Type.EIGHT, Color.RED);
+            //hand.Add(cc1);
 
-            // Card cc2 = new Card(UnoGame.Models.Type.EIGHT, Color.YELLOW);
-            // hand.Add(cc2);
+            //Card cc2 = new Card(UnoGame.Models.Type.EIGHT, Color.YELLOW);
+            //hand.Add(cc2);
 
 
             int n = 10;
@@ -33,6 +34,7 @@ namespace Client.Controller
             int viewCardIndex = 0;
             int cardIndexList = 0;
             int lastPrintedCardIndex = hand.Count-1;
+            bool alreadyDrew = false;
             Console.SetCursorPosition(sumPos, 43);
             Console.WriteLine("*");
             while (true)
@@ -107,14 +109,13 @@ namespace Client.Controller
                     return cardIndexList;
                 }
 
-                else if (key.Key == ConsoleKey.P)
+                else if (key.Key == ConsoleKey.P && !alreadyDrew)
                 {
-                   //invio il fatto che stato premuto p per
-                   //pescare
+                    //invio il fatto che stato premuto p per
+                    alreadyDrew = true;
+                    client.SendMessage(new Message { Type = TypeMessage.DRAW_CARD});
                 }
             }
         }
-
-  
     }
 }

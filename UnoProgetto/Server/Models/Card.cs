@@ -15,6 +15,13 @@
 
         public Type Type { get; set; }
         public Color Color { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Card card &&
+                   Type == card.Type &&
+                   Color == card.Color;
+        }
     }
 
     public enum Type
@@ -45,6 +52,8 @@
         GREEN,
         NONE
     }
+
+
 
 
 }

@@ -107,30 +107,58 @@ namespace Client.Utilis
         {
             int top = 0;
             int left = 30;
-            for (int i = 0; i < 7; i++)
-            {
-                coveredCard(left, top);
-                left += 10;
-            }
 
-    
+            if (nCards<8)
+            {
+                for (int i = 0; i < nCards; i++)
+                {
+                    coveredCard(left, top);
+                    left += 10;
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 7; i++)
+                {
+                    coveredCard(left, top);
+                    left += 10;
+                }
+
+                Console.SetCursorPosition(left, top + 5);
+                Console.WriteLine("+" + (nCards - 7));
+            }
+         
+
+        
             
         }
 
-        internal void printOpponentHorizHand(int nCards)
+        internal void printOpponentVertHand(int nCards)
         {
             int left = 0;
             int top = 1;
-            for (int i = 0; i < 7; i++)
-            {
-                coveredHorizontalCard(left, top);
-                top += 5;
-            }
+       
 
-            if (nCards > 7)
+            if (nCards <8)
             {
+
+                for (int i = 0; i < nCards; i++)
+                {
+                    coveredVerticalCard(left, top);
+                    top += 5;
+                }
+                
+            }
+            else
+            {
+                for (int i = 0; i < 7; i++)
+                {
+                    coveredVerticalCard(left, top);
+                    top += 5;
+                }
 
                 //da definire posizione
+                Console.SetCursorPosition(left, top + 5);
                 Console.WriteLine("+" + (nCards - 7));
             }
         }
@@ -146,7 +174,6 @@ namespace Client.Utilis
         //a seconda del numero di giocatori, la posizione del deck degli avversari cambia
         public void printPlayerScrollView(List<Card> hand, int startIndex, int endIndex)
         {
-
 
             int top = 37;
             int left = 30;
@@ -217,7 +244,7 @@ namespace Client.Utilis
             Console.ResetColor();
         }
 
-        public void coveredHorizontalCard(int left, int top)
+        public void coveredVerticalCard(int left, int top)
         {
             Console.SetCursorPosition(left, top);
             Console.WriteLine(" ----------");

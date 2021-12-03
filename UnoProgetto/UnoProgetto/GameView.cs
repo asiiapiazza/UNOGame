@@ -17,12 +17,13 @@ namespace Client
         DrawCard drawCards = new DrawCard();
         PlayerController controller = new PlayerController();
         public List<Card> playerHand = new List<Card>();
+        
 
         /// <summary>
         ///  il suo mazzo, la carta scartata all’inizio, una carta scoperta che rappresenta il mazzo,
         ///  il numero di carte degli avversari/carte degli avversi coperte 
         /// </summary>
-        internal int View(GameModel model, List<Card> hand)
+        internal Card SelectionView(List<int> nOpponentsCards,List<Card> hand, Card lastDiscaredCard)
         {
 
             Console.Clear();
@@ -33,23 +34,11 @@ namespace Client
             //stampo mano giocatore avversario
             //query dove trovo numero di carte dei giocatori avversari
             //problema: cosa succede se l'avversario ha piu di 7 carte? gli stampo a fianco il numero di carte piu di 7
-
-            var opponentHands = model.Views.Where(t => t._hand != hand).ToList();
-            Card cc = new Card(UnoGame.Models.Type.EIGHT, Color.BLUE);
-            opponentHands[0]._hand.Add(cc);
-
-            Card cc1 = new Card(UnoGame.Models.Type.EIGHT, Color.RED);
-            opponentHands[0]._hand.Add(cc1);
-
-            Card cc2 = new Card(UnoGame.Models.Type.EIGHT, Color.YELLOW);
-            opponentHands[0]._hand.Add(cc2);
-
-            printPlayersDeck(opponentHands[0]._hand.Count, opponentHands[1]._hand.Count);
-
+            printPlayersDeck(nOpponentsCards[0], nOpponentsCards[1]);
 
 
             //stampo carta scartata
-            printDiscardedCard(model.DiscardedHand.Last());
+            printDiscardedCard(lastDiscaredCard);
 
             //stampo mazzo pesca
             printDrawCard();
@@ -58,15 +47,14 @@ namespace Client
             drawCards.printPlayerHand(hand);
 
             //selezione della carta
-           
-                int index = SelectCard();
-                return index;
- 
-       
-            
+            int index = SelectCard();
+            Card card = hand[index];
+        
+            return card;
+    
         }
 
-        internal void Start(GameModel model, List<Card> hand)
+        internal void View(List<int> nOpponentsCards, List<Card> hand, Card lastDiscaredCard)
         {
 
             Console.Clear();
@@ -77,14 +65,13 @@ namespace Client
             //stampo mano giocatore avversario
             //query dove trovo numero di carte dei giocatori avversari
             //problema: cosa succede se l'avversario ha piu di 7 carte? gli stampo a fianco il numero di carte piu di 7
+            printPlayersDeck(nOpponentsCards[0], nOpponentsCards[1]);
 
-            //var opponentHands = model.Views.Where(t => t._hand != hand).ToList();
-            //printPlayersDeck(opponentHands[0]._hand.Count, opponentHands[1]._hand.Count);
 
 
 
             //stampo carta scartata
-            printDiscardedCard(model.DiscardedHand.Last());
+            printDiscardedCard(lastDiscaredCard);
 
             //stampo mazzo pesca
             printDrawCard();
@@ -97,11 +84,7 @@ namespace Client
         }
 
 
-        internal void WaitYourTurn()
-        {
-            Console.Clear();
-            Console.WriteLine("Wait for your turn!");
-        }
+ 
         /// <summary>
         /// selezione della carta tramite keybindings
         /// </summary>
@@ -137,7 +120,7 @@ namespace Client
         internal void printPlayersDeck(int nCardOpponent, int nCardHorzOpp)
         {
             drawCards.printOpponentHand(nCardOpponent);
-            drawCards.printOpponentHorizHand(nCardHorzOpp);
+            drawCards.printOpponentVertHand(nCardHorzOpp);
         }
 
 

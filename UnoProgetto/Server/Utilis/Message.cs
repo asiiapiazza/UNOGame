@@ -14,7 +14,8 @@ namespace UnoGame
         public TypeMessage Type { get; set; }
         public string Body { get; set; }
         public List<Card> MyHand { get; set; }
-
+        public Card lastDiscardeCard { get; set; }
+        public List<int> nOpponentCards { get; set; }
     }
 
 
@@ -22,6 +23,7 @@ namespace UnoGame
     public enum TypeMessage
     {
         START_GAME,
+        DRAW_CARD,
         START_TURN,
         MODEL_UPDATE,
         WAITING_TURN,
