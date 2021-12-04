@@ -280,7 +280,7 @@ namespace UnoGame.Controllers
             if (card != null)
             {
                 var playerHand = message.MyHand;
-                bool discarded = CheckDiscardedCard(card, playerHand);
+                bool discarded = CheckDiscardedCard(card);
 
 
                 if (!discarded)
@@ -308,7 +308,7 @@ namespace UnoGame.Controllers
         /// <param name="selectedCard"> la carta selezionata</param>
         /// <param name="playerHand">mano del giocatore del turno</param>
         /// <returns></returns>
-        bool CheckDiscardedCard(Card selectedCard, List<Card> playerHand)
+        bool CheckDiscardedCard(Card selectedCard)
         {
 
             _lastDiscardedCard = _model.DiscardedHand.Last();

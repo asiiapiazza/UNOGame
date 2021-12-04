@@ -27,6 +27,7 @@ namespace Client
 
             Console.Clear();
            playerHand = hand;
+           
 
             //stampo mani COPERTE giocatori avversari
             PrintPlayersDeck(nOpponentsCards[0], nOpponentsCards[1]);
@@ -40,9 +41,13 @@ namespace Client
             //visione del mio deck
             drawCards.printPlayerHand(hand);
 
+            Console.WriteLine(" ");
+            Console.WriteLine("Press P to draw, use arrow keys to change card");
+
+
             //selezione della carta
             int index = SelectCard(alreadyDiscarded);
-
+ 
             if (index>=0)
             {
                 Card card = hand[index];

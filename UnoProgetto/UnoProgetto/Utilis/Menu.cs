@@ -19,9 +19,6 @@ namespace Client.Utilis
             int option = menu.PrintOptions(menuItems);
             return option;
         }
-
-       
-
         private int PrintOptions(string[] menuItems)
         {
 

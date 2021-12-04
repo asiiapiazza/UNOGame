@@ -26,7 +26,6 @@ namespace UnoGame
  
         DRAW_CARD,
         START_TURN,
-        HAND_UPDATE_VIEW,
         WAITING_TURN,
         WIN,
         LOSE,
