@@ -29,7 +29,6 @@ namespace UnoGame
         HAND_UPDATE_VIEW,
         WAITING_TURN,
         WIN,
-        LOSE,
-        CLIENT_DISCONNECTED
+        LOSE
     }
 }

@@ -34,16 +34,24 @@ namespace Client
             //stream vuol dire che i dati vengono mandati con bit e il protocollo tcp
             socket = new Socket(ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-            //il client è attivo quindi si connette alla socket
-            socket.Connect(ipe);
+            try
+            {
+                //il client è attivo quindi si connette alla socket
+                socket.Connect(ipe);
 
 
-            //inizializzo un reader e un writer per scrivere sulla socket
-            reader = new StreamReader(new NetworkStream(socket));
+                //inizializzo un reader e un writer per scrivere sulla socket
+                reader = new StreamReader(new NetworkStream(socket));
 
-            //stream reader che legge direttamente dalla SOCKET
-             writer = new StreamWriter(new NetworkStream(socket));
-            writer.AutoFlush = true;
+                //stream reader che legge direttamente dalla SOCKET
+                writer = new StreamWriter(new NetworkStream(socket));
+                writer.AutoFlush = true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Wait for the server!");
+            }
+            
 
 
             Card selectedCard = new Card();
@@ -54,17 +62,29 @@ namespace Client
 
             Console.WriteLine("Wait for other players!");
 
-            
 
+            string data = "";
+            Message message = new Message();
 
             while (true)
             {
                 //aggiunto dopo, leggere cosa mi dice il server. Operazione bloccante, se non c'è niente rimane in atesa
                 //try catch
-                var data = reader.ReadLine();
+                try
+                {
+                    if (data != null)
+                    {
 
-                //deserializzo con la classe MESSAGE
-                 var message = JsonSerializer.Deserialize<Message>(data);
+                        data = reader.ReadLine();
+                    }
+
+                    //deserializzo con la classe MESSAGE
+                    message = JsonSerializer.Deserialize<Message>(data);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("");
+                }
 
                 //operazione da fare in base al tipo
 
