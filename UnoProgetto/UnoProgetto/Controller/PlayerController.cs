@@ -18,82 +18,76 @@ namespace Client.Controller
 
             int n = 10;
             int sumPos = 33;
-            int startIndex = 0;
-            int viewCardIndex = 0;
-            int cardIndexList = 0;
-            int lastPrintedCardIndex = hand.Count-1;
+
+            //da dove devo iniziare a stampare il mio deck
+            int startCardIndex = 0;
+            int viewedCardPosition = 0;
+            int lastCardIndex = 0;
             Console.SetCursorPosition(sumPos, 43);
             Console.WriteLine("*");
-
+      
             while (true)
             {
                 ConsoleKeyInfo key = Console.ReadKey(true);
                 if (key.Key == ConsoleKey.RightArrow)
                 {
-                    if (cardIndexList != hand.Count-1 || cardIndexList !=0 )
+                    if (lastCardIndex != hand.Count-1 || lastCardIndex !=0 )
                     {
-                        if (viewCardIndex <= hand.Count-1 && viewCardIndex != hand.Count - 1)
+                        if (viewedCardPosition <= 6 && viewedCardPosition != 6)
                         {
                             
                             Console.SetCursorPosition(sumPos, 43);
                             Console.WriteLine(" ");
                             draw.indexCard(sumPos + n, 43);
-                            cardIndexList++;
-                            viewCardIndex++;
+                            lastCardIndex++;
+                            viewedCardPosition++;
                             sumPos += n;
+      
 
-                           
                         }
                       
                
                     }
            
-
                     //se ho piu di 7 carte e sono alla fine della mia view del deck (quindi posizione 6)
                     //scorro ristampo tutto il deck partendo da posizione deck[1]
-                    if (hand.Count > 7 && viewCardIndex == hand.Count - 1 && cardIndexList != hand.Count-1)
+                    if (hand.Count > 7 && viewedCardPosition == 6 && lastCardIndex != hand.Count-1)
                     {
 
-                        draw.printPlayerScrollView(hand, startIndex + 1, cardIndexList+1);
-                        lastPrintedCardIndex++ ;
-
-                        startIndex++;
-                        cardIndexList++;
-             
+                        startCardIndex++;
+                        lastCardIndex++;
+                        draw.printPlayerScrollView(hand, startCardIndex , startCardIndex + 7);
                     }
 
                 }
                 else if (key.Key == ConsoleKey.LeftArrow)
                 {
-                    if (viewCardIndex != 0)
+                    if (viewedCardPosition != 0)
                     {
-                        if (cardIndexList > 0 && viewCardIndex != 0)
+                        if (lastCardIndex > 0 && viewedCardPosition != 0)
                         {
                             
                             Console.SetCursorPosition(sumPos, 43);
                             Console.WriteLine(" ");
                             draw.indexCard(sumPos - n, 43);
-                            cardIndexList--;
-                            viewCardIndex--;
+                            lastCardIndex--;
+                            viewedCardPosition--;            
                             sumPos -= n;
                         }
                     }
                     
 
-                    if (hand.Count > 7 && viewCardIndex == 0 && cardIndexList>0 && startIndex > 0 && cardIndexList != hand.Count-1)
+                    if (hand.Count > 7 && viewedCardPosition == 0 && lastCardIndex>0 && startCardIndex > 0 && lastCardIndex != 0)
                     {
-                        //devo calcolare indice ultima carta da stampare
-                        startIndex--;
-                        cardIndexList--;
-                        lastPrintedCardIndex--;
-                        draw.printPlayerScrollView(hand, startIndex, lastPrintedCardIndex);
+                        startCardIndex--;
+                        lastCardIndex--;
+                        draw.printPlayerScrollView(hand, startCardIndex, startCardIndex +7 );
                     }
-
                 }
             
                 else if (key.Key == ConsoleKey.Enter)
                 {
-                    return cardIndexList;
+                    return lastCardIndex;
                 }
 
                 else if (key.Key == ConsoleKey.P && !alreadyDiscarded )
@@ -102,7 +96,7 @@ namespace Client.Controller
                     alreadyDiscarded = true;
                     Client.SendMessage(new Message { Type = TypeMessage.DRAW_CARD });
                     return -1;
-                
+               
                 }
             }
         }

@@ -26,24 +26,23 @@ namespace Client
         {
 
             Console.Clear();
-
-            playerHand = hand;
+           playerHand = hand;
 
             //stampo mani COPERTE giocatori avversari
-            printPlayersDeck(nOpponentsCards[0], nOpponentsCards[1]);
-
+            PrintPlayersDeck(nOpponentsCards[0], nOpponentsCards[1]);
 
             //stampo carta scartata
-            printDiscardedCard(lastDiscaredCard);
+            PrintDiscardedCard(lastDiscaredCard);
 
             //stampo mazzo pesca
-            printDrawCard();
+            PrintDrawCard();
 
             //visione del mio deck
             drawCards.printPlayerHand(hand);
 
             //selezione della carta
             int index = SelectCard(alreadyDiscarded);
+
             if (index>=0)
             {
                 Card card = hand[index];
@@ -59,32 +58,23 @@ namespace Client
         }
 
         /// <summary>
-        /// 
+        /// Metodo per la stampa della carta ma non la selezione. Richiamato al turno del giocatore.
         /// </summary>
-        /// <param name="nOpponentsCards"></param>
-        /// <param name="hand"></param>
-        /// <param name="lastDiscaredCard"></param>
         internal void GameVision(List<int> nOpponentsCards, List<Card> hand, Card lastDiscaredCard)
         {
 
             Console.Clear();
-
             playerHand = hand;
 
-
-            //stampo mano giocatore avversario
-            //query dove trovo numero di carte dei giocatori avversari
-            //problema: cosa succede se l'avversario ha piu di 7 carte? gli stampo a fianco il numero di carte piu di 7
-            printPlayersDeck(nOpponentsCards[0], nOpponentsCards[1]);
+            PrintPlayersDeck(nOpponentsCards[0], nOpponentsCards[1]);
 
             //stampo carta scartata
-            printDiscardedCard(lastDiscaredCard);
+            PrintDiscardedCard(lastDiscaredCard);
 
             //stampo mazzo pesca
-            printDrawCard();
+            PrintDrawCard();
 
             //visione del mio deck
-
             drawCards.printPlayerHand(hand);
 
             Console.WriteLine("Wait your turn!");
@@ -96,11 +86,7 @@ namespace Client
 
         }
 
-        /// <summary>
-        /// selezione della carta tramite keybindings
-        /// </summary>
-        /// 
-
+       
         internal int SelectCard(bool alreadyDiscarded)
         {
             int index = controller.selectCard(playerHand, alreadyDiscarded);
@@ -108,49 +94,44 @@ namespace Client
         }
 
 
-        /// <summary>
-        /// stampa mazzo del giocatore/scarto/pescare
-        /// </summary>
-        /// <param name="deck"></param>    
-        //stampa il deck di carte scartate
-        internal void printDiscardedCard(Card card)
+
+        internal void PrintDiscardedCard(Card card)
         {
             drawCards.printCard(card, 63,15);
         }
 
-        //stampa il deck da cui pescare
-        internal void printDrawCard()
+        internal void PrintDrawCard()
         {
             drawCards.coveredCard(72, 15);
         }
 
-        //stampa il deck (nascosto) degli altri giocatori
-        internal void printPlayersDeck(int nCardOpponent, int nCardHorzOpp)
+
+        //stampa le mani (nascosti) degli altri giocatori
+        internal void PrintPlayersDeck(int nCardOpponent, int nCardHorzOpp)
         {
             drawCards.printOpponentHand(nCardOpponent);
             drawCards.printOpponentVertHand(nCardHorzOpp);
         }
 
 
-        /// <summary>
-        /// ha perso, stampa sconfitta
-        /// </summary>
-        /// <param name="view"></param>
-        internal void hasLost()
+        internal void HasLost()
         {
             Console.Clear();
-            Console.WriteLine("Hai perso");
+            Console.WriteLine("Sadly, you lost!");
+            Console.WriteLine("[Press any key to exit!]");
+            Console.Read();
+            Environment.Exit(0);
         }
 
 
-        /// <summary>
-        /// ha vinto, stampa vittoria
-        /// </summary>
-        /// <param name="view"></param>
-        internal void hasWon()
+
+        internal void HasWon()
         {
-            Console.Clear();
-           Console.WriteLine("Hai vinto");
+           Console.Clear();
+           Console.WriteLine("Congrats, you won!");
+           Console.WriteLine("[Press any key to exit!]");
+           Console.Read();
+           Environment.Exit(0);
         }
 
    

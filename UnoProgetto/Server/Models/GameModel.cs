@@ -16,11 +16,9 @@ namespace UnoGame.Models
         public List<PlayerView> Views { get; set; }
         
 
-
-
         public GameModel()
         {
-            initalizeUnoDeck();
+            InitalizeUnoDeck();
             Views = new List<PlayerView>();
             DiscardedHand = new List<Card>();
         }
@@ -28,7 +26,7 @@ namespace UnoGame.Models
 
 
         //FATTO
-        private void initalizeUnoDeck()
+        private void InitalizeUnoDeck()
         {
             UnoHand = new List<Card>()
             {
@@ -152,13 +150,13 @@ namespace UnoGame.Models
                 new Card(Type.STOP_TURN, Color.YELLOW),
                 new Card(Type.STOP_TURN, Color.YELLOW),
 
-                //JOLLI O CAMBIO COLORE
+                //JOLLY
                 new Card(Type.JOLLY, Color.NONE),
                 new Card(Type.JOLLY, Color.NONE),
                 new Card(Type.JOLLY, Color.NONE),
                 new Card(Type.JOLLY, Color.NONE),
 
-                //JOLLI PESCA 4 O CAMBIO COLORE
+                //PESCA 4 
                 new Card(Type.DRAW_FOUR, Color.NONE),
                 new Card(Type.DRAW_FOUR, Color.NONE),
                 new Card(Type.DRAW_FOUR, Color.NONE),
@@ -170,28 +168,28 @@ namespace UnoGame.Models
 
 
 
-        //FATTO
-        public void discardCardFromMyHand(Card selectedCard, int turn)
+      
+        public void DiscardCardFromMyHand(Card selectedCard, int turn)
         {
 
             DiscardedHand.Add(selectedCard);
             Views[turn]._hand.Remove(selectedCard);
         }
 
-
-        //FATTO
-        public Card drawFromDrawDeck(int turn)
+        public Card DrawFromDrawDeck(int turn)
         {
-            var rnd = new Random();
-            var index = rnd.Next(0, UnoHand.Count-1);
-            var card = UnoHand[index];
-            UnoHand.Remove(card);
-            Views[turn]._hand.Add(card);
-            return Views[turn]._hand.Last();
+           
+                var rnd = new Random();
+                var index = rnd.Next(0, UnoHand.Count - 1);
+                var card = UnoHand[index];
+                UnoHand.Remove(card);
+                Views[turn]._hand.Add(card);
+                return Views[turn]._hand.Last();
+            
+
 
         }
 
-        //FATTO
         public void AddView(PlayerView view)
         {
             Views.Add(view);

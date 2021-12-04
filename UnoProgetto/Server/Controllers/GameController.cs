@@ -11,12 +11,14 @@ namespace UnoGame.Controllers
 {
     public class GameController
     {
-
-        private PlayerView[] _views;
+        public List<PlayerView> _opponentViews;
+        public bool _clockWise = true;
         public int _turn;
         public GameModel _model;
+        private PlayerView[] _views;
         private Card _lastDiscardedCard;
-        public List<PlayerView> opponentviews;
+        public Random rnd = new Random();
+   
 
         public GameController(GameModel model)
         {
@@ -26,51 +28,44 @@ namespace UnoGame.Controllers
 
         }
 
+   
         public void AddView(PlayerView view)
         {
 
             _views[_turn] = view;
-            nextTurn();
+            NextTurn();
         }
-
-
-
-        //1) PRIMA OPERAZIONE ESEGUITA DEL SERVER
-        //questi metodi vanno nella playerview
-        //vengono richiamati dei metodi nel GameModel per la gestione dei deck       
+ 
         public void Start()
         {
-            var rnw = new Random();
-            _turn = rnw.Next(0, 2);
-
+            _turn = rnd.Next(0, 2);
 
             //metodo che distribuisce 7 carte ad ogni giocatore della view
-            starterHands();
+            StarterHands();
 
-            //scelgo la prima carta dal deck scarta
-            firstDiscardedCard();
+            //scelgo la prima carta iniziale
+            FirstDiscardedCard();
 
-
-            //LINQ per trovare gli avversari
-            opponentviews = _views.Where(t => t != _views[_turn]).ToList();
+            //Linq per trovare gli avversari rispetto al giocatore del primo turno
+            _opponentViews = _views.Where(t => t != _views[_turn]).ToList();
 
             //restituisce il numero di carte che hanno gli avversari
-            var nOpponentsCards = oppponentsViewCards(opponentviews);
+            var nOpponentsCards = OppponentsViewCards(_opponentViews);
 
             //messaggio di startare il turno (scelta della carta)
             _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, MyHand = _views[_turn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
 
-
-            opponentsViews();
+            //metodo per la stampa della view degli altri avversari (N carte coperte)
+            OpponentsViews();
 
         }
 
         /// <summary>
-        /// metodo che mi restituisce il numero di carte che hanno gli avversari
+        /// Metodo che mi restituisce il numero di carte che hanno gli avversari, salvandoli in una lista
         /// </summary>
         /// <param name="playerViews"></param>
         /// <returns></returns>
-        internal List<int> oppponentsViewCards(List<PlayerView> playerViews)
+        internal List<int> OppponentsViewCards(List<PlayerView> playerViews)
         {
             List<int> nCardsOpponents = new List<int>();
             foreach (var item in playerViews)
@@ -81,11 +76,13 @@ namespace UnoGame.Controllers
             return nCardsOpponents;
         }
 
-        //il giocatore del turno vede i mazzi avversari coperti, ma gli avversasi non vedono il mazzo degli avversari coperti. Utilizzo metodo separato
-        private void opponentsViews()
+        /// <summary>
+        /// Metodo per la stampa della view degli altri avversari (N carte coperte) in base al turno
+        /// </summary>
+        private void OpponentsViews()
         {
             List<int> nOpponentsCards = new List<int>();
-            opponentviews = new List<PlayerView>();
+            _opponentViews = new List<PlayerView>();
             int opponentTurn = 0;
 
             switch (_turn)
@@ -95,14 +92,14 @@ namespace UnoGame.Controllers
 
                     //view giocatore 1
                     opponentTurn = _turn + 1;
-                    opponentviews = _views.Where(t => t != _views[opponentTurn]).ToList();
-                    nOpponentsCards = oppponentsViewCards(opponentviews);
+                    _opponentViews = _views.Where(t => t != _views[opponentTurn]).ToList();
+                    nOpponentsCards = OppponentsViewCards(_opponentViews);
                     _views[opponentTurn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
 
                     //view giocatore 2
                     opponentTurn = _turn + 2;
-                    opponentviews = _views.Where(t => t != _views[opponentTurn]).ToList();
-                    nOpponentsCards = oppponentsViewCards(opponentviews);
+                    _opponentViews = _views.Where(t => t != _views[opponentTurn]).ToList();
+                    nOpponentsCards = OppponentsViewCards(_opponentViews);
                     _views[opponentTurn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
                     break;
 
@@ -112,14 +109,14 @@ namespace UnoGame.Controllers
 
                     //view giocatore 2
                     opponentTurn = _turn + 1;
-                    opponentviews = _views.Where(t => t != _views[opponentTurn]).ToList();
-                    nOpponentsCards = oppponentsViewCards(opponentviews);
+                    _opponentViews = _views.Where(t => t != _views[opponentTurn]).ToList();
+                    nOpponentsCards = OppponentsViewCards(_opponentViews);
                     _views[opponentTurn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
 
                     //view giocatore 0
                     opponentTurn = _turn - 1;
-                    opponentviews = _views.Where(t => t != _views[opponentTurn]).ToList();
-                    nOpponentsCards = oppponentsViewCards(opponentviews);
+                    _opponentViews = _views.Where(t => t != _views[opponentTurn]).ToList();
+                    nOpponentsCards = OppponentsViewCards(_opponentViews);
                     _views[opponentTurn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
 
 
@@ -130,14 +127,14 @@ namespace UnoGame.Controllers
 
                     //view giocatore 1
                     opponentTurn = _turn - 1;
-                    opponentviews = _views.Where(t => t != _views[opponentTurn]).ToList();
-                    nOpponentsCards = oppponentsViewCards(opponentviews);
+                    _opponentViews = _views.Where(t => t != _views[opponentTurn]).ToList();
+                    nOpponentsCards = OppponentsViewCards(_opponentViews);
                     _views[opponentTurn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
 
                     //view giocatore 0
                     opponentTurn = _turn - 2;
-                    opponentviews = _views.Where(t => t != _views[opponentTurn]).ToList();
-                    nOpponentsCards = oppponentsViewCards(opponentviews);
+                    _opponentViews = _views.Where(t => t != _views[opponentTurn]).ToList();
+                    nOpponentsCards = OppponentsViewCards(_opponentViews);
                     _views[opponentTurn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
 
                     break;
@@ -148,40 +145,34 @@ namespace UnoGame.Controllers
         }
 
 
-
-
-
-
         /// <summary>
         /// Metodo per la pesca dal deck UnoHand della prima carta scartata ad inizio game
-        /// devo fare i controlli 
-        /// . Nel caso in cui la prima carta sia una carta Azione, è necessario applicare le regole della sezione Funzioni delle carte
+        /// Nel caso in cui la prima carta sia una carta Azione, è necessario applicare le regole della sezione Funzioni delle carte
         ///; fa eccezione la carta "Jolly Pesca Quattro" che, se scoperta all'inizio del gioco, deve essere 
         ///rimessa a caso nel "mazzo pesca" e sostituita con un'altra.
         /// </summary>
         /// <returns></returns>
         /// 
-
-        private void firstDiscardedCard()
+        private void FirstDiscardedCard()
         {
             var card = new Card();
-            var rnd = new Random();
             var index = 0;
             do
             {
+                //la  carta è presa random
                 index = rnd.Next(0, _model.UnoHand.Count - 1);
                 card = _model.UnoHand[index];
                 if (card.Type == Models.Type.DRAW_TWO)
                 {
-                    drawNCards(2);
+                    DrawNCards(2);
                 }
                 else if (card.Type == Models.Type.STOP_TURN)
                 {
-                    altCard();
+                    AltCard();
                 }
                 else if (card.Type == Models.Type.INVERT_TURN)
                 {
-                    invertTurnOrder();
+                    InvertTurnOrder();
                 }
                 else
                 {
@@ -189,26 +180,24 @@ namespace UnoGame.Controllers
                 }
             } while (card.Type == Models.Type.DRAW_FOUR);
 
-
+            //aggiungo la carta al mazzo di carte scartate
             _model.DiscardedHand.Add(card);
-
 
         }
 
 
         /// <summary>
-        /// distribuisce 7 carte dal mazzo base ad ogni mazzo dei giocatori
+        /// Metodo distribuzione 7 carte dal mazzo base ad ogni mazzo dei giocatori.
+        /// Le carte sono prese randomicamente dal mazzo UnoHand non mischiato.
         /// </summary>
-        private void starterHands()
+        private void StarterHands()
         {
             Card cardFromUnoHand;
-            var rnd = new Random();
             int index = 0;
             for (int i = 0; i < _views.Count(); i++)
             {
                 for (int j = 0; j < 7; j++)
                 {
-                    //prendo la carta in cima al mazzo coperta
                     index = rnd.Next(0, _model.UnoHand.Count - 1);
                     cardFromUnoHand = _model.UnoHand[index];
 
@@ -218,43 +207,35 @@ namespace UnoGame.Controllers
 
                     //aggiungo carta al deck del giocatore
                     _model.Views[i]._hand.Add(cardFromUnoHand);
-
-
-
                 }
             }
-
-
 
         }
 
         /// <summary>
-        /// metodo per la pesca delle carte dal deck. Quando pesco +4/+2 o devo pescare una carta per forza
+        /// Metodo per il richiamo delle funzioni in base all'ultima carta scartata (+4,+2, cambio giro, salta turno)
         /// </summary>
-        /// <param name="currentView"></param>
-        /// <param name="message"></param>
-        /// <param name="model"></param>
-        private void distribuiteCards()
+        private void CheckActionCard()
         {
             _lastDiscardedCard = _model.DiscardedHand.Last();
 
             if (_lastDiscardedCard.Type == Models.Type.DRAW_TWO)
             {
-                drawNCards(2);
+                DrawNCards(2);
             }
             else if (_lastDiscardedCard.Type == Models.Type.STOP_TURN)
             {
 
-                altCard();
+                AltCard();
             }
             else if (_lastDiscardedCard.Type == Models.Type.INVERT_TURN)
             {
 
-                invertTurnOrder();
+                InvertTurnOrder();
             }
             else if (_lastDiscardedCard.Type == Models.Type.DRAW_FOUR)
             {
-                drawNCards(4);
+                DrawNCards(4);
             }
         }
 
@@ -262,45 +243,48 @@ namespace UnoGame.Controllers
         /// Metodo pesca N carte 
         /// </summary>
         /// <param name="nCardsToDraw">numero carte da pescare</param>
-        private void drawNCards(int nCardsToDraw)
+        private void DrawNCards(int nCardsToDraw)
         {
-            //al giocatore dopo, faccio pescare
-            nextTurn();
+          
+            var tempTurn = _turn;
+
+            //aumento il turno in modo di far pescare il giocatore dopo del player che ha scartatp
+            NextTurn();
+
+           
             for (int i = 0; i < nCardsToDraw; i++)
             {
-                _model.drawFromDrawDeck(_turn);
+                _model.DrawFromDrawDeck(_turn);
             }
 
             //ritorno al turno originale
-            invertTurnOrder();
+            _turn = tempTurn;
         }
-
 
 
         /// <summary>
         /// Metodo per scartare una propria carta dal proprio mazzo
         /// </summary>
         /// <param name="selectedCard"></param>
-        public void discardCard(Message message)
+        public void DiscardCard(Message message)
         {
-
             var card = JsonSerializer.Deserialize<Card>(message.Body);
-
             if (card != null)
             {
                 var playerHand = message.MyHand;
-                bool discarded = checkDiscardedCard(card, playerHand);
+                bool discarded = CheckDiscardedCard(card, playerHand);
 
 
-                //se la carta che vuole sccartare non  va bene, riprova a scartare
                 if (!discarded)
                 {
+                    //il giocatore che ha pescato, dopo aver pescato può scartare la carta pescata/carta che aveva gia nel deck
+
                     StartTurn();
                 }
                 else
                 {
 
-                    nextTurn();
+                    NextTurn();
                     StartTurn();
                 }
             }
@@ -309,157 +293,188 @@ namespace UnoGame.Controllers
 
         }
 
-
-        //FATTO
-        bool checkDiscardedCard(Card selectedCard, List<Card> playerHand)
+        /// <summary>
+        /// Controllo della carta da scartare. Controllo se è possibile scartarla in base all'ultima carta scartata
+        /// Restituisce false se non posso scartare, true se posso.
+        /// </summary>
+        /// <param name="selectedCard"> la carta selezionata</param>
+        /// <param name="playerHand">mano del giocatore del turno</param>
+        /// <returns></returns>
+        bool CheckDiscardedCard(Card selectedCard, List<Card> playerHand)
         {
 
             _lastDiscardedCard = _model.DiscardedHand.Last();
-            bool discardedBool = false;
+            bool discardedBool;
 
-
-            if (selectedCard.Color == _lastDiscardedCard.Color || selectedCard.Type == _lastDiscardedCard.Type || _lastDiscardedCard.Type == Models.Type.JOLLY || selectedCard.Type == Models.Type.DRAW_FOUR || selectedCard.Type == Models.Type.JOLLY)
+            //possibili casi in cui una carta può essere scartata
+            if (selectedCard.Color == _lastDiscardedCard.Color || selectedCard.Type == _lastDiscardedCard.Type || _lastDiscardedCard.Type == Models.Type.DRAW_FOUR || _lastDiscardedCard.Type == Models.Type.JOLLY || selectedCard.Type == Models.Type.DRAW_FOUR || selectedCard.Type == Models.Type.JOLLY)
             {
                 discardedBool = true;
-                _model.discardCardFromMyHand(selectedCard, _turn);
 
-                //qui controllo se il player deve pescare qualche carta prima
-                distribuiteCards();
+                //metodo per scartare la carta dal deck
+                _model.DiscardCardFromMyHand(selectedCard, _turn);
+
+                //controllo se il player deve pescare qualche carta prima
+                CheckActionCard();
+
+                //controllo se ho vinto
+                IsWinner();
+
+                //log message
                 Console.WriteLine($"Player {_turn} has discarded card {selectedCard.Color} {selectedCard.Type}");
             }
-
-            else if (selectedCard.Type == Models.Type.CHANGE_COLOR)
+            else if (selectedCard.Type == Models.Type.INVERT_TURN)
             {
-
+                
+                InvertTurnOrder();
                 discardedBool = true;
             }
             else
             {
-
-                discardedBool = false;
+               
                 Console.WriteLine($"Player {_turn} Draw/Choose another card: can't discard card {selectedCard.Color} {selectedCard.Type}");
+                discardedBool = false;
             }
 
             return discardedBool;
         }
 
 
-
-        public void isWinner(List<Card> hand)
+        
+        public void IsWinner()
         {
-            //controllare se il mazzo del giocatore è vuoto
-            if (hand.Count == 0)
+            if (_views[_turn]._hand.Count == 0)
             {
-                Console.WriteLine("You Won!");
-            }
+                //invio messaggio vittoria al client
+                _views[_turn].SendMessage(new Message { Type = TypeMessage.WIN });
+                Console.WriteLine($"Player {_turn} won");
+
+            }          
+
         }
-        public void invertTurnOrder()
+
+        //--------------------------GESTIONE PESCA----------------------------//
+        /// <summary>
+        /// Metodo per controllare se il giocatore dopo aver pescato, può scartare o salta il turno.
+        /// </summary>
+        public void Draw()
         {
-            if (_turn == 0)
+            CheckDrawDeck();
+            var drewCard = _model.DrawFromDrawDeck(_turn);
+            var lastDiscardedCard = _model.DiscardedHand.Last();
+
+            //controllo se la carta pescata posso scartarla o meno
+            bool canIDiscard = false;
+
+            _opponentViews = _views.Where(t => t != _views[_turn]).ToList();
+            List<int> nOpponentsCards = OppponentsViewCards(_opponentViews);
+
+
+            //controllo della carta
+            for (int i = 0; i < _views[_turn]._hand.Count && !canIDiscard; i++)
             {
-                _turn = 2;
+                if (_views[_turn]._hand[i].Color == lastDiscardedCard.Color || _views[_turn]._hand[i].Type == lastDiscardedCard.Type || _views[_turn]._hand[i].Type == Models.Type.CHANGE_COLOR || _views[_turn]._hand[i].Type == Models.Type.DRAW_FOUR || _views[_turn]._hand[i].Type == Models.Type.JOLLY)
+                {
+                    canIDiscard = true;
+
+                }
 
             }
+
+         
+            if (canIDiscard)
+            {
+                //se posso scartare, rimando un messagio START_TURN allo stesso player
+                _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, MyHand = _views[_turn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = true });
+                
+                //rimando in wait gli avversari
+                OpponentsViews();
+
+            }
+
             else
             {
+                //se non posso scartare, mando WAITING_TURN
+                _views[_turn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[_turn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
 
-                _turn -= 1;
+
+                //log console
+                Console.WriteLine($"Player {_turn} can't do any other move");
+
+                NextTurn();
+                StartTurn();
             }
+
         }
 
-
-        public void altCard()
+        /// <summary>
+        /// Metodo per il controllo del mazzo draw. Se è finito, lo ripopolo con le carte scartate tranne l'ultima
+        /// </summary>
+        public void CheckDrawDeck()
         {
-            nextTurn();
-        }
-
-        public void checkDrawDeck()
-        {
-
             if (_model.UnoHand.Count == 0)
             {
                 _lastDiscardedCard = _model.DiscardedHand.Last();
-                var rnd = new Random();
-                var randomized = _model.UnoHand.OrderBy(a => Guid.NewGuid()).ToList();
                 _model.DiscardedHand.Remove(_lastDiscardedCard);
                 _model.UnoHand = _model.DiscardedHand;
-                _model.UnoHand = randomized;
             }
         }
 
 
-
+        //--------------------------GESTIONE TURNI----------------------------//
         private void StartTurn()
         {
-            opponentviews = _views.Where(t => t != _views[_turn]).ToList();
-            List<int> nOpponentsCards = oppponentsViewCards(opponentviews);
+            _opponentViews = _views.Where(t => t != _views[_turn]).ToList();
+            List<int> nOpponentsCards = OppponentsViewCards(_opponentViews);
 
-            opponentsViews();
-            //se turno è uguale a 1, so che il player 
+
+            //Agli avversar viene mmandato un messaggio di tipo WAITING_TURN
+            OpponentsViews();
+
+            //Al giocatore del turno, viene mmandato un messaggio di tipo START_TURN
             _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, MyHand = _views[_turn]._hand, lastDiscardeCard = _model.DiscardedHand.Last(), nOpponentCards = nOpponentsCards });
 
         }
 
-        internal void Draw()
+        private void NextTurn()
         {
-            var drewCard = _model.drawFromDrawDeck(_turn);
 
-
-            //inccongruenza: non dovrei mandargli il numero di carte del giocatore perche non cambia
-            opponentviews = _views.Where(t => t != _views[_turn]).ToList();
-            List<int> nOpponentsCards = oppponentsViewCards(opponentviews);
-
-            //controllo se la carta pescata posso scartarla o meno (DA VEDERE)
-            bool canIDiscard = false;
-
-            while (!canIDiscard)
+            if (_clockWise)
             {
-                for (int i = 0; i < _views[_turn]._hand.Count; i++)
+                if (_turn != 2)
                 {
-                    if (_views[_turn]._hand[i].Color == drewCard.Color || _views[_turn]._hand[i].Type == drewCard.Type || _views[_turn]._hand[i].Type == Models.Type.CHANGE_COLOR || _views[_turn]._hand[i].Type == Models.Type.DRAW_FOUR || _views[_turn]._hand[i].Type == Models.Type.JOLLY)
-                    {
-                        canIDiscard = true;
-
-                    }
-
+                    _turn++;
                 }
-            }
-            
-
-
-            if (canIDiscard)
-            {
-                _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, MyHand = _views[_turn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = true });
-                opponentsViews();
-
+                else
+                {
+                    _turn = 0;
+                }
             }
             else
             {
-                _views[_turn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[_turn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
-
-                Console.WriteLine($"Player {_turn} can't do any other move");
-                nextTurn();
-                StartTurn();
+                if (_turn != 0)
+                {
+                    _turn--;
+                }
+                else
+                {
+                    _turn = 2;
+                }
             }
-            
-
         }
 
 
-        private void nextTurn()
+
+
+        //------------------------------CARTE AZIONI--------------------------//   
+        private void InvertTurnOrder()
         {
-
-
-            if (_turn == 2)
-            {
-                _turn = 0;
-
-            }
-            else
-            {
-
-                _turn += 1;
-            }
+            _clockWise = !_clockWise;
+        }
+     
+        private void AltCard()
+        {
+            NextTurn();
         }
     }
 }

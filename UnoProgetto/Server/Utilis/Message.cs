@@ -20,16 +20,16 @@ namespace UnoGame
     }
 
 
-    //SELECT_CARD = NEXT_TURN
+  
     public enum TypeMessage
     {
-        START_GAME,
+ 
         DRAW_CARD,
         START_TURN,
         HAND_UPDATE_VIEW,
         WAITING_TURN,
         WIN,
         LOSE,
-        CLIENT_DISCONNECTED
+       
     }
 }

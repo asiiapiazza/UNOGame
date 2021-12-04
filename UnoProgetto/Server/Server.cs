@@ -24,34 +24,21 @@ namespace UnoGame
 
             //N tasks a seconda del numero di player
             var tasks = new Task[nP];
-
-            
+    
             for (int i = 0; i < nP; i++)
             {
-                //si blocca finche un client non si è connesso alla socket
-                //appena un client si connette alla socket, non è bloccante e passo alla riga di codice successiva
+  
                 var socket = listener.Accept();
                 Console.WriteLine($"Player {i} connected");
 
-                //virtualview = visione che ho io del client, sto creando la classe player
                 var view = new PlayerView(socket, controller);
-
-                //aggiungo questa view al mio model
                 model.AddView(view);
-
-                //aggiungo al controller che il player
                 controller.AddView(view);
 
-                //assegno il task. questa visione virtuale del giocatore si mette in attesa pronta
-                //ad ascoltare i messaggi da parte del client.
-
-                //GLI PASSO IL METODO PER ASCOLTARE PER SEMPRE
+                //viene passato il metodo per la ricezione dei messaggi
                 tasks[i] = Task.Run(view.Run);
             }
 
-            //faccio partire il controller
-            //il controller avvia un metodo Start che manda un messaggio di tipi view.START al client
-            //che permette di far stampare per ogni player il proprio deck + il resto
             controller.Start();
 
             //attendo che tutti i task finiscano

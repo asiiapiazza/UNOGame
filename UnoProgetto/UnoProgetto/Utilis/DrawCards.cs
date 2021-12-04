@@ -21,6 +21,7 @@ namespace Client.Utilis
                     break;
                 case Color.BLUE:
                     Console.ForegroundColor = ConsoleColor.Blue;
+ 
                     break;
                 case Color.GREEN:
                     Console.ForegroundColor = ConsoleColor.Green;
@@ -177,7 +178,7 @@ namespace Client.Utilis
 
             int top = 37;
             int left = 30;
-            for (int i = startIndex; i <=endIndex; i++)
+            for (int i = startIndex; i <endIndex; i++)
             {
                 printCard(hand[i], left, top);
                 left += 10;
@@ -189,16 +190,30 @@ namespace Client.Utilis
 
         public void printPlayerHand(List<Card> hand)
         {
-
-
             int top = 37;
             int left = 30;
-            for (int i = 0; i < hand.Count; i++)
+            if (hand.Count > 7)
             {
-                printCard(hand[i], left, top);
-                left += 10;
+                for (int i = 0; i < 7; i++)
+                {
+                    printCard(hand[i], left, top);
+                    left += 10;
 
+
+                }
             }
+            else
+            {
+                for (int i = 0; i < hand.Count; i++)
+                {
+                    printCard(hand[i], left, top);
+                    left += 10;
+
+
+                }
+            }
+       
+          
 
         }
         internal void printArrowL()

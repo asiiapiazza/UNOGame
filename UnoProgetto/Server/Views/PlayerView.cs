@@ -15,7 +15,7 @@ namespace UnoGame.Views
 
     public class PlayerView
     {
-        //è la rappresentazione del giocatore e in questo caso ha un riferimento alla socket al client associato
+  
         private Socket _socket;
         private StreamReader _reader;
         private StreamWriter _writer;
@@ -28,9 +28,6 @@ namespace UnoGame.Views
 
         }
 
- 
-
-        //ho bisogno della socket e del controller di riferimento
         public PlayerView(Socket socket, GameController controller)
         {
             _controller = controller;
@@ -40,53 +37,38 @@ namespace UnoGame.Views
             _writer.AutoFlush = true;
         }
 
-
-        //eseguo la funzione Run
-        //la rappresentazione del giocatore nel server fa le stesse cose del giocatore nel client
-        //ovvero aspetta i messaggi da parte del client, messaggi di tipo mossa
-        //la view deve notificare il controller
+        //metodo che i task creati nella classe Server eseguono
         public void Run()
         {
             string data;
             Message message = new Message();
             while (true)
             {
-                //aspetta messaggio del client
+            
                 try
                 {
-
+                    //aspetta messaggio del client
                     data = _reader.ReadLine();
-
                     message = JsonSerializer.Deserialize<Message>(data);
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("Server Error: client disconnected");
-                
+                    Console.WriteLine("Server Error: client disconnected");            
                     Environment.Exit(0);
                 }
 
 
-
-                //da sostituire switchcase
                 switch (message.Type)
                 {
            
                     case TypeMessage.START_TURN:                  
-                        _controller.discardCard(message);                          
-                        break;
-
-                    case TypeMessage.WIN:
-
-                     break;
-
-                    case TypeMessage.LOSE:
-                        
+                        _controller.DiscardCard(message);                          
                         break;
 
                     case TypeMessage.DRAW_CARD:
                         _controller.Draw();
                         break;
+
                     default:
                         Console.WriteLine($"{message.Type} not supported");
                         break;
@@ -97,8 +79,7 @@ namespace UnoGame.Views
         //scrivere sulla socket il messaggio serializzato
         public void SendMessage(Message message)
         {
-
-                _writer.WriteLine(JsonSerializer.Serialize(message));
+           _writer.WriteLine(JsonSerializer.Serialize(message));
             
         }
 
