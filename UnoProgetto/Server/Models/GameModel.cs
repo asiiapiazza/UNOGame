@@ -30,7 +30,6 @@ namespace UnoGame.Models
         //FATTO
         private void initalizeUnoDeck()
         {
-
             UnoHand = new List<Card>()
             {
                 //CARTE BLU
@@ -166,9 +165,7 @@ namespace UnoGame.Models
                 new Card(Type.DRAW_FOUR, Color.NONE),
 
              };
-            var rnd = new Random();
-            var randomized = UnoHand.OrderBy(a => Guid.NewGuid()).ToList();
-            UnoHand = randomized;
+
         }
 
 
@@ -179,19 +176,18 @@ namespace UnoGame.Models
 
             DiscardedHand.Add(selectedCard);
             Views[turn]._hand.Remove(selectedCard);
-
-
-
         }
 
 
         //FATTO
-        public void drawFromDrawDeck(int turn)
+        public Card drawFromDrawDeck(int turn)
         {
-            var card = UnoHand.Last();
+            var rnd = new Random();
+            var index = rnd.Next(0, UnoHand.Count-1);
+            var card = UnoHand[index];
             UnoHand.Remove(card);
             Views[turn]._hand.Add(card);
-
+            return Views[turn]._hand.Last();
 
         }
 

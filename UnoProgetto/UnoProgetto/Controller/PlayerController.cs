@@ -98,8 +98,7 @@ namespace Client.Controller
 
                 else if (key.Key == ConsoleKey.P && !alreadyDiscarded )
                 {
-                    //PROBLEMA
-                    //prima di mandare il messaggio per pescare, viene mandato il messaggio di start turn
+                    
                     alreadyDiscarded = true;
                     Client.SendMessage(new Message { Type = TypeMessage.DRAW_CARD });
                     return -1;

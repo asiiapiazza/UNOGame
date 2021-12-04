@@ -62,7 +62,7 @@ namespace UnoGame.Views
                 catch (Exception)
                 {
                     Console.WriteLine("Server Error: client disconnected");
-                    //SendMessage(new Message { Type = TypeMessage.CLIENT_DISCONNECTED });
+                
                     Environment.Exit(0);
                 }
 
@@ -81,7 +81,7 @@ namespace UnoGame.Views
                      break;
 
                     case TypeMessage.LOSE:
-
+                        
                         break;
 
                     case TypeMessage.DRAW_CARD:
