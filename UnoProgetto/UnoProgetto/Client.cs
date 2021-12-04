@@ -66,31 +66,35 @@ namespace Client
             string data = "";
             Message message = new Message();
 
+            //aggiunto dopo, leggere cosa mi dice il server.Operazione bloccante, se non c'è niente rimane in attesa
+            
+
+           
+            //Console.WriteLine("A player has left the game");
             while (true)
             {
-                //aggiunto dopo, leggere cosa mi dice il server. Operazione bloccante, se non c'è niente rimane in atesa
+
+
                 //try catch
                 try
                 {
-                    if (data != null)
+                    if (reader != null && data != null)
                     {
-
                         data = reader.ReadLine();
                     }
-
                     //deserializzo con la classe MESSAGE
                     message = JsonSerializer.Deserialize<Message>(data);
+
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("");
+                    Environment.Exit(0);
                 }
 
                 //operazione da fare in base al tipo
-
                 switch (message.Type)
                 {
-                                       
+
                     case TypeMessage.START_TURN:
 
                         alreadyDiscarded = message.alreadyDiscarded;
@@ -102,12 +106,12 @@ namespace Client
                         //se viene restituita una carta, viene mandato un messaggio di tipo startTurn dove la carta viene scartata
                         if (selectedCard != null)
                         {
-                            writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeMessage.START_TURN, Body = JsonSerializer.Serialize(selectedCard)}));
+                            writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeMessage.START_TURN, Body = JsonSerializer.Serialize(selectedCard) }));
 
                         }
-                        
+
                         break;
-            
+
 
                     case TypeMessage.WAITING_TURN:
                         view.GameVision(message.nOpponentCards, message.MyHand, message.lastDiscardeCard);
@@ -134,7 +138,10 @@ namespace Client
                         Console.WriteLine($"{message.Type} not supported");
                         break;
                 }
+
             }
+
+
 
 
         }
