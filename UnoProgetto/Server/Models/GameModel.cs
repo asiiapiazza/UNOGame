@@ -186,8 +186,7 @@ namespace UnoGame.Models
                 Views[turn]._hand.Add(card);
                 return Views[turn]._hand.Last();
             
-
-
+           
         }
 
         public void AddView(PlayerView view)

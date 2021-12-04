@@ -45,12 +45,11 @@ namespace Client
                 writer = new StreamWriter(new NetworkStream(socket));
                 writer.AutoFlush = true;
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 Console.WriteLine("Wait for the server!");
             }
             
-
 
             Card selectedCard = new Card();
             bool alreadyDiscarded = false;
@@ -61,27 +60,22 @@ namespace Client
             string data = "";
             Message message = new Message();
 
-            //aggiunto dopo, leggere cosa mi dice il server.Operazione bloccante, se non c'è niente rimane in attesa
-            
-
            
-            //Console.WriteLine("A player has left the game");
             while (true)
             {
 
-
-                //try catch
                 try
                 {
                     if (reader != null && data != null)
                     {
                         data = reader.ReadLine();
                     }
-                    //deserializzo con la classe MESSAGE
+
+                 
                     message = JsonSerializer.Deserialize<Message>(data);
 
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     Environment.Exit(0);
                 }
@@ -132,9 +126,6 @@ namespace Client
 
             }
 
-
-
-
         }
 
         public static void SendMessage(Message message)
@@ -142,7 +133,6 @@ namespace Client
             
             writer.WriteLine(JsonSerializer.Serialize(message));
         }
-
 
 
     }

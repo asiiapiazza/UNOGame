@@ -9,8 +9,7 @@ namespace Client.Utilis
 {
     public class DrawCard
     {
-   
-        
+      
         
         internal void printCard(Card card, int left, int top)
         {
@@ -164,15 +163,12 @@ namespace Client.Utilis
             }
         }
 
-
         internal void indexCard(int left, int top)
         {
             Console.SetCursorPosition(left, top);
             Console.WriteLine("*");
         }
 
-
-        //a seconda del numero di giocatori, la posizione del deck degli avversari cambia
         public void printPlayerScrollView(List<Card> hand, int startIndex, int endIndex)
         {
 
@@ -213,8 +209,7 @@ namespace Client.Utilis
                 }
             }
        
-          
-
+         
         }
         internal void printArrowL()
         {
@@ -227,13 +222,8 @@ namespace Client.Utilis
             Console.SetCursorPosition(30, 40);
             Console.WriteLine("<--");
         }
-        public void clearCurrentConsoleLine()
-        {
-            Console.Write(new String(' ', Console.BufferWidth));
 
-        }
 
-        //il giocatore vede la carta girata: deck avversari e carta da cui pescare
         public void coveredCard(int positionX, int positionY)
         {
             Console.SetCursorPosition(positionX, positionY);
@@ -263,7 +253,6 @@ namespace Client.Utilis
         {
             Console.SetCursorPosition(left, top);
             Console.WriteLine(" ----------");
-
 
             Console.SetCursorPosition(left, top + 1);
             Console.WriteLine("|    C     |");

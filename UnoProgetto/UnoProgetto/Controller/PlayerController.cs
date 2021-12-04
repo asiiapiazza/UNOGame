@@ -23,6 +23,7 @@ namespace Client.Controller
             int startCardIndex = 0;
             int viewedCardPosition = 0;
             int lastCardIndex = 0;
+
             Console.SetCursorPosition(sumPos, 43);
             Console.WriteLine("*");
       
@@ -33,7 +34,7 @@ namespace Client.Controller
                 {
                     if (lastCardIndex != hand.Count-1 || lastCardIndex !=0 )
                     {
-                        if (viewedCardPosition <= 6 && viewedCardPosition != 6)
+                        if (viewedCardPosition+1 < hand.Count && viewedCardPosition != 6) 
                         {
                             
                             Console.SetCursorPosition(sumPos, 43);
