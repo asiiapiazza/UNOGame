@@ -16,12 +16,12 @@ namespace Client
 {
     public class Client
     {
-        //view di un player
+ 
 
         //rendere la view una variabile utilizzabile da tutte le classi del client
         private Socket socket;
         private StreamReader reader;
-        private StreamWriter writer;
+        public static StreamWriter writer;
 
         public  void StartClient()
         {
@@ -42,16 +42,16 @@ namespace Client
             reader = new StreamReader(new NetworkStream(socket));
 
             //stream reader che legge direttamente dalla SOCKET
-            var writer = new StreamWriter(new NetworkStream(socket));
+             writer = new StreamWriter(new NetworkStream(socket));
             writer.AutoFlush = true;
 
 
-            Card selectedCard = new Card() ;
-
+            Card selectedCard = new Card();
+            bool alreadyDiscarded = false;
 
             //deve aspettare che il server gli dica che si sia connesso un altro client
             //while true, deve continuare sempre a cercare qualche messaggio del server
-          
+
             Console.WriteLine("Wait for other players!");
 
             
@@ -73,26 +73,33 @@ namespace Client
                                        
                     case TypeMessage.START_TURN:
 
-                        //mando tutto model = modificare le variabili in message
-       
-                        selectedCard = view.SelectionView(message.nOpponentCards, message.MyHand, message.lastDiscardeCard);          
-                        writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeMessage.START_TURN, Body = JsonSerializer.Serialize(selectedCard) }));
+                        alreadyDiscarded = message.alreadyDiscarded;
+
+                        //al metodo passo anche se il giocatore ha pescato o meno. Il booleano viene passato al metodo di selezione carta e pesca
+                        //e non potrà accedere alla funzione pesca P
+                        selectedCard = view.SelectionView(message.nOpponentCards, message.MyHand, message.lastDiscardeCard, alreadyDiscarded);
+
+                        //se viene restituita una carta, viene mandato un messaggio di tipo startTurn dove la carta viene scartata
+                        if (selectedCard != null)
+                        {
+                            writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeMessage.START_TURN, Body = JsonSerializer.Serialize(selectedCard)}));
+
+                        }
+                        
                         break;
             
 
-                    case TypeMessage.MODEL_UPDATE:
-                        view.View(message.nOpponentCards, message.MyHand, message.lastDiscardeCard);
-                        break;
-
                     case TypeMessage.WAITING_TURN:
-
-                        view.View(message.nOpponentCards, message.MyHand, message.lastDiscardeCard);
+                        view.GameVision(message.nOpponentCards, message.MyHand, message.lastDiscardeCard);
                         break;
+
 
                     case TypeMessage.DRAW_CARD:
-                        selectedCard = JsonSerializer.Deserialize<Card>(message.Body);
-
+                        alreadyDiscarded = message.alreadyDiscarded;
+                        selectedCard = view.SelectionView(message.nOpponentCards, message.MyHand, message.lastDiscardeCard, alreadyDiscarded);
+                        writer.WriteLine(JsonSerializer.Serialize(new Message { Type = TypeMessage.START_TURN, Body = JsonSerializer.Serialize(selectedCard) }));
                         break;
+
 
                     case TypeMessage.WIN:
                         //devo passare il giocatore del CLIENT
@@ -112,8 +119,9 @@ namespace Client
 
         }
 
-        public void SendMessage(Message message)
+        public static void SendMessage(Message message)
         {
+            
             writer.WriteLine(JsonSerializer.Serialize(message));
         }
 

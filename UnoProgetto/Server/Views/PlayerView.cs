@@ -72,8 +72,7 @@ namespace UnoGame.Views
                 switch (message.Type)
                 {
            
-                    case TypeMessage.START_TURN:
-                        _controller.distribuiteCards(this);
+                    case TypeMessage.START_TURN:                  
                         _controller.discardCard(message);                          
                         break;
 
@@ -86,7 +85,7 @@ namespace UnoGame.Views
                         break;
 
                     case TypeMessage.DRAW_CARD:
-                        _controller.discardCard(message);
+                        _controller.Draw();
                         break;
                     default:
                         Console.WriteLine($"{message.Type} not supported");

@@ -1,6 +1,7 @@
 ﻿using Client.Utilis;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,22 +12,9 @@ namespace Client.Controller
 {
     public class PlayerController
     {
-
         DrawCard draw = new DrawCard();
-        Client client = new Client();
-        internal int selectCard(List<Card> hand)
+        internal int selectCard(List<Card> hand, bool alreadyDiscarded)
         {
-
-            //TEST SCORRIMENTO
-            //Card cc = new Card(UnoGame.Models.Type.EIGHT, Color.BLUE);
-            //hand.Add(cc);
-
-            //Card cc1 = new Card(UnoGame.Models.Type.EIGHT, Color.RED);
-            //hand.Add(cc1);
-
-            //Card cc2 = new Card(UnoGame.Models.Type.EIGHT, Color.YELLOW);
-            //hand.Add(cc2);
-
 
             int n = 10;
             int sumPos = 33;
@@ -34,12 +22,11 @@ namespace Client.Controller
             int viewCardIndex = 0;
             int cardIndexList = 0;
             int lastPrintedCardIndex = hand.Count-1;
-            bool alreadyDrew = false;
             Console.SetCursorPosition(sumPos, 43);
             Console.WriteLine("*");
+
             while (true)
             {
-               
                 ConsoleKeyInfo key = Console.ReadKey(true);
                 if (key.Key == ConsoleKey.RightArrow)
                 {
@@ -109,11 +96,14 @@ namespace Client.Controller
                     return cardIndexList;
                 }
 
-                else if (key.Key == ConsoleKey.P && !alreadyDrew)
+                else if (key.Key == ConsoleKey.P && !alreadyDiscarded )
                 {
-                    //invio il fatto che stato premuto p per
-                    alreadyDrew = true;
-                    client.SendMessage(new Message { Type = TypeMessage.DRAW_CARD});
+                    //PROBLEMA
+                    //prima di mandare il messaggio per pescare, viene mandato il messaggio di start turn
+                    alreadyDiscarded = true;
+                    Client.SendMessage(new Message { Type = TypeMessage.DRAW_CARD });
+                    return -1;
+                
                 }
             }
         }

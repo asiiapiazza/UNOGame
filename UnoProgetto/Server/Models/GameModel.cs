@@ -186,7 +186,7 @@ namespace UnoGame.Models
 
 
         //FATTO
-        public void drawFromDrawHand(int turn)
+        public void drawFromDrawDeck(int turn)
         {
             var card = UnoHand.Last();
             UnoHand.Remove(card);

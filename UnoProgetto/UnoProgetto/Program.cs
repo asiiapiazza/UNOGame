@@ -18,6 +18,7 @@ namespace Client
         private static void Main(string[] args)
         {
             //STAMPA DEL MENU
+            //Console.SetWindowSize(40, 30);
             Console.CursorVisible = false;
             Menu menu = new Menu();
             Client client = new Client();
@@ -38,7 +39,6 @@ namespace Client
                     Environment.Exit(0);
                     break;
          
-
 
             }
 

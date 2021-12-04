@@ -16,6 +16,7 @@ namespace UnoGame
         public List<Card> MyHand { get; set; }
         public Card lastDiscardeCard { get; set; }
         public List<int> nOpponentCards { get; set; }
+        public bool alreadyDiscarded { get; set; }
     }
 
 
@@ -25,7 +26,7 @@ namespace UnoGame
         START_GAME,
         DRAW_CARD,
         START_TURN,
-        MODEL_UPDATE,
+        HAND_UPDATE_VIEW,
         WAITING_TURN,
         WIN,
         LOSE,
