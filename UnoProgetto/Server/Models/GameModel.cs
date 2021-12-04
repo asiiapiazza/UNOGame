@@ -25,7 +25,6 @@ namespace UnoGame.Models
 
 
 
-        //FATTO
         private void InitalizeUnoDeck()
         {
             UnoHand = new List<Card>()

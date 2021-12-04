@@ -280,7 +280,7 @@ namespace UnoGame.Controllers
             if (card != null)
             {
                 var playerHand = message.MyHand;
-                bool discarded = CheckDiscardedCard(card, playerHand);
+                bool discarded = CheckDiscardedCard(card);
 
 
                 if (!discarded)
@@ -306,9 +306,8 @@ namespace UnoGame.Controllers
         /// Restituisce false se non posso scartare, true se posso.
         /// </summary>
         /// <param name="selectedCard"> la carta selezionata</param>
-        /// <param name="playerHand">mano del giocatore del turno</param>
         /// <returns></returns>
-        bool CheckDiscardedCard(Card selectedCard, List<Card> playerHand)
+        bool CheckDiscardedCard(Card selectedCard)
         {
 
             _lastDiscardedCard = _model.DiscardedHand.Last();
@@ -385,7 +384,7 @@ namespace UnoGame.Controllers
             //controllo della carta
             for (int i = 0; i < _views[_turn]._hand.Count && !canIDiscard; i++)
             {
-                if (_views[_turn]._hand[i].Color == lastDiscardedCard.Color || _views[_turn]._hand[i].Type == lastDiscardedCard.Type || _views[_turn]._hand[i].Type == Models.Type.CHANGE_COLOR || _views[_turn]._hand[i].Type == Models.Type.DRAW_FOUR || _views[_turn]._hand[i].Type == Models.Type.JOLLY)
+                if (_views[_turn]._hand[i].Color == lastDiscardedCard.Color || _views[_turn]._hand[i].Type == lastDiscardedCard.Type || _views[_turn]._hand[i].Type == Models.Type.DRAW_FOUR || _views[_turn]._hand[i].Type == Models.Type.JOLLY)
                 {
                     canIDiscard = true;
 

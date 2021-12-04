@@ -40,8 +40,7 @@
         DRAW_FOUR,
         INVERT_TURN,
         STOP_TURN,
-        JOLLY,
-        CHANGE_COLOR
+        JOLLY
     }
 
     public enum Color

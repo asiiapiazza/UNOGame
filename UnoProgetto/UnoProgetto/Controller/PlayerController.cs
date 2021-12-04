@@ -13,7 +13,7 @@ namespace Client.Controller
     public class PlayerController
     {
         DrawCard draw = new DrawCard();
-        internal int selectCard(List<Card> hand, bool alreadyDiscarded)
+        internal int SelectCard(List<Card> hand, bool alreadyDiscarded)
         {
 
             int n = 10;
@@ -39,7 +39,7 @@ namespace Client.Controller
                             
                             Console.SetCursorPosition(sumPos, 43);
                             Console.WriteLine(" ");
-                            draw.indexCard(sumPos + n, 43);
+                            draw.IndexCard(sumPos + n, 43);
                             lastCardIndex++;
                             viewedCardPosition++;
                             sumPos += n;
@@ -57,7 +57,7 @@ namespace Client.Controller
 
                         startCardIndex++;
                         lastCardIndex++;
-                        draw.printPlayerScrollView(hand, startCardIndex , startCardIndex + 7);
+                        draw.PrintPlayerScrollView(hand, startCardIndex , startCardIndex + 7);
                     }
 
                 }
@@ -70,7 +70,7 @@ namespace Client.Controller
                             
                             Console.SetCursorPosition(sumPos, 43);
                             Console.WriteLine(" ");
-                            draw.indexCard(sumPos - n, 43);
+                            draw.IndexCard(sumPos - n, 43);
                             lastCardIndex--;
                             viewedCardPosition--;            
                             sumPos -= n;
@@ -82,7 +82,7 @@ namespace Client.Controller
                     {
                         startCardIndex--;
                         lastCardIndex--;
-                        draw.printPlayerScrollView(hand, startCardIndex, startCardIndex +7 );
+                        draw.PrintPlayerScrollView(hand, startCardIndex, startCardIndex +7 );
                     }
                 }
             
