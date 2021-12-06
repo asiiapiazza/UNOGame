@@ -18,13 +18,14 @@ namespace UnoGame.Controllers
         private PlayerView[] _views;
         private Card _lastDiscardedCard;
         public Random rnd = new Random();
-        private int opponentTurn = 0;
+        public int opponentTurn;
 
         public GameController(GameModel model)
         {
             _model = model;
             _views = new PlayerView[3];
             _turn = 0;
+            opponentTurn = _turn;
 
         }
 
@@ -56,7 +57,8 @@ namespace UnoGame.Controllers
             _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, MyHand = _views[_turn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
 
             //metodo per la stampa della view degli altri avversari (N carte coperte)
-            OpponentsViews(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
+            Message message = new Message { Type = TypeMessage.WAITING_TURN, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false };
+            OpponentsViews(message);
 
         }
 
@@ -76,6 +78,7 @@ namespace UnoGame.Controllers
             return nCardsOpponents;
         }
 
+
         /// <summary>
         /// Metodo per mandare messaggi agli opponenti
         /// </summary>
@@ -89,21 +92,20 @@ namespace UnoGame.Controllers
                 //turno del giocatore 0
                 case 0:
 
-                    //view giocatore 1
-                    opponentTurn = _turn + 1;
-
-                    //il valore di opponent cambia per tutti i turni. Nel caso in cui abbia bisogno di mandare START_TURN, devo riassegnare la mano.
-                    message.MyHand = _views[opponentTurn]._hand;
+                    //view giocatore 1, vede 0 e 1
+                    opponentTurn = _turn + 1;            
+                    message.MyHand = _views[opponentTurn]._hand;               
                     _opponentViews = _views.Where(t => t != _views[opponentTurn]).ToList();
                     nOpponentsCards = OppponentsViewCards(_opponentViews);
-                    _views[opponentTurn].SendMessage(message);
+                    message.nOpponentCards = nOpponentsCards;
+                 _views[opponentTurn].SendMessage(message);
 
                     //view giocatore 2
-
                     opponentTurn = _turn + 2;
                     message.MyHand = _views[opponentTurn]._hand;
                     _opponentViews = _views.Where(t => t != _views[opponentTurn]).ToList();
                     nOpponentsCards = OppponentsViewCards(_opponentViews);
+                    message.nOpponentCards = nOpponentsCards;
                     _views[opponentTurn].SendMessage(message); break;
 
 
@@ -122,6 +124,7 @@ namespace UnoGame.Controllers
                     message.MyHand = _views[opponentTurn]._hand;
                     _opponentViews = _views.Where(t => t != _views[opponentTurn]).ToList();
                     nOpponentsCards = OppponentsViewCards(_opponentViews);
+                    message.nOpponentCards = nOpponentsCards;
                     _views[opponentTurn].SendMessage(message);
 
                     break;
@@ -134,15 +137,15 @@ namespace UnoGame.Controllers
                     message.MyHand = _views[opponentTurn]._hand;
                     _opponentViews = _views.Where(t => t != _views[opponentTurn]).ToList();
                     nOpponentsCards = OppponentsViewCards(_opponentViews);
+                    message.nOpponentCards = nOpponentsCards;
                     _views[opponentTurn].SendMessage(message);
 
                     //view giocatore 0
-                    opponentTurn = _turn - 2;
-                    
-                    
+                    opponentTurn = _turn - 2;          
                     message.MyHand = _views[opponentTurn]._hand;
                     _opponentViews = _views.Where(t => t != _views[opponentTurn]).ToList();
                     nOpponentsCards = OppponentsViewCards(_opponentViews);
+                    message.nOpponentCards = nOpponentsCards;
                     _views[opponentTurn].SendMessage(message);
                     break;
 
@@ -306,7 +309,6 @@ namespace UnoGame.Controllers
         /// Restituisce false se non posso scartare, true se posso.
         /// </summary>
         /// <param name="selectedCard"> la carta selezionata</param>
-        /// <param name="playerHand">mano del giocatore del turno</param>
         /// <returns></returns>
         bool CheckDiscardedCard(Card selectedCard)
         {
@@ -385,7 +387,7 @@ namespace UnoGame.Controllers
             //controllo della carta
             for (int i = 0; i < _views[_turn]._hand.Count && !canIDiscard; i++)
             {
-                if (_views[_turn]._hand[i].Color == lastDiscardedCard.Color || _views[_turn]._hand[i].Type == lastDiscardedCard.Type || _views[_turn]._hand[i].Type == Models.Type.CHANGE_COLOR || _views[_turn]._hand[i].Type == Models.Type.DRAW_FOUR || _views[_turn]._hand[i].Type == Models.Type.JOLLY)
+                if (_views[_turn]._hand[i].Color == lastDiscardedCard.Color || _views[_turn]._hand[i].Type == lastDiscardedCard.Type || _views[_turn]._hand[i].Type == Models.Type.DRAW_FOUR || _views[_turn]._hand[i].Type == Models.Type.JOLLY)
                 {
                     canIDiscard = true;
 
@@ -400,14 +402,14 @@ namespace UnoGame.Controllers
                 _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, MyHand = _views[_turn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = true });
                 
                 //rimando in wait gli avversari
-                OpponentsViews(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
-
+                Message message = new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[opponentTurn]._hand, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false };
+                OpponentsViews(message);
             }
 
             else
             {
                 //se non posso scartare, mando WAITING_TURN
-                _views[_turn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[_turn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
+                _views[_turn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
 
 
                 //log console
@@ -435,15 +437,18 @@ namespace UnoGame.Controllers
 
         private void StartTurn()
         {
+            //calcolo avversarsi del player del turno
             _opponentViews = _views.Where(t => t != _views[_turn]).ToList();
-            List<int> nOpponentsCards = OppponentsViewCards(_opponentViews);
 
-
-            //Agli avversar viene mmandato un messaggio di tipo WAITING_TURN
-            OpponentsViews(new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[opponentTurn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
+            //restituisce il numero di carte che hanno gli avversari
+            var nOpponentsCards = OppponentsViewCards(_opponentViews);
 
             //Al giocatore del turno, viene mmandato un messaggio di tipo START_TURN
             _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, MyHand = _views[_turn]._hand, lastDiscardeCard = _model.DiscardedHand.Last(), nOpponentCards = nOpponentsCards });
+
+
+            //Agli avversari viene mmandato un messaggio di tipo WAITING_TURN
+            OpponentsViews(new Message { Type = TypeMessage.WAITING_TURN, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
 
         }
 

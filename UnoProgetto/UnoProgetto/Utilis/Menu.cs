@@ -13,7 +13,7 @@ namespace Client.Utilis
         public int Print()
         {
 
-            printHeader();
+            PrintHeader();
             string[] menuItems = {"3 PLAYERS", "EXIT" };
             var menu = new Menu();
             int option = menu.PrintOptions(menuItems);
@@ -72,12 +72,13 @@ namespace Client.Utilis
                 }
                 Console.Clear();
                 Console.SetCursorPosition(0, 0);
-                printHeader();
+                PrintHeader();
             }
 
             return cursorPosition;
         }
-        internal void printHeader()
+        
+        internal void PrintHeader()
         {
 
             Console.ForegroundColor = ConsoleColor.Magenta;

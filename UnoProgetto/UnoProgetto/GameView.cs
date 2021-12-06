@@ -26,8 +26,7 @@ namespace Client
         {
 
             Console.Clear();
-           playerHand = hand;
-           
+            playerHand = hand;
 
             //stampo mani COPERTE giocatori avversari
             PrintPlayersDeck(nOpponentsCards[0], nOpponentsCards[1]);
@@ -39,7 +38,10 @@ namespace Client
             PrintDrawCard();
 
             //visione del mio deck
-            drawCards.printPlayerHand(hand);
+            drawCards.PrintPlayerHand(hand);
+
+            Console.WriteLine(" ");
+            Console.WriteLine("Press P to draw, use arrow keys to change card");
 
             Console.WriteLine(" ");
             Console.WriteLine("Press P to draw, use arrow keys to change card");
@@ -80,42 +82,41 @@ namespace Client
             PrintDrawCard();
 
             //visione del mio deck
-            drawCards.printPlayerHand(hand);
+            drawCards.PrintPlayerHand(hand);
 
             Console.WriteLine("Wait your turn!");
         }
 
         internal void MyHandView(List<Card> hand)
         {
-            drawCards.printPlayerHand(hand);
+            drawCards.PrintPlayerHand(hand);
 
         }
 
        
         internal int SelectCard(bool alreadyDiscarded)
         {
-            int index = controller.selectCard(playerHand, alreadyDiscarded);
+            int index = controller.SelectCard(playerHand, alreadyDiscarded);
             return index;
         }
 
 
-
         internal void PrintDiscardedCard(Card card)
         {
-            drawCards.printCard(card, 63,15);
+            drawCards.PrintCard(card, 63,15);
         }
 
         internal void PrintDrawCard()
         {
-            drawCards.coveredCard(72, 15);
+            drawCards.CoveredCard(72, 15);
         }
 
 
         //stampa le mani (nascosti) degli altri giocatori
         internal void PrintPlayersDeck(int nCardOpponent, int nCardHorzOpp)
         {
-            drawCards.printOpponentHand(nCardOpponent);
-            drawCards.printOpponentVertHand(nCardHorzOpp);
+            drawCards.PrintOpponentHand(nCardOpponent);
+            drawCards.PrintOpponentVertHand(nCardHorzOpp);
         }
 
 
