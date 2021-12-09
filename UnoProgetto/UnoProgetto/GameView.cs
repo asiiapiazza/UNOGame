@@ -38,13 +38,11 @@ namespace Client
             PrintDrawCard();
 
             //visione del mio deck
-            drawCards.PrintPlayerHand(hand);
+            MyHandView(hand);
 
             Console.WriteLine(" ");
             Console.WriteLine("Press P to draw, use arrow keys to change card");
 
-            Console.WriteLine(" ");
-            Console.WriteLine("Press P to draw, use arrow keys to change card");
 
 
             //selezione della carta
@@ -82,7 +80,7 @@ namespace Client
             PrintDrawCard();
 
             //visione del mio deck
-            drawCards.PrintPlayerHand(hand);
+            MyHandView(hand);
 
             Console.WriteLine("Wait your turn!");
         }

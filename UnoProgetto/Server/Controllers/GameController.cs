@@ -18,14 +18,13 @@ namespace UnoGame.Controllers
         private PlayerView[] _views;
         private Card _lastDiscardedCard;
         public Random rnd = new Random();
-        public int opponentTurn;
+        private int opponentTurn;
 
         public GameController(GameModel model)
         {
             _model = model;
             _views = new PlayerView[3];
             _turn = 0;
-            opponentTurn = _turn;
 
         }
 
@@ -117,6 +116,7 @@ namespace UnoGame.Controllers
                     message.MyHand = _views[opponentTurn]._hand;
                     _opponentViews = _views.Where(t => t != _views[opponentTurn]).ToList();
                     nOpponentsCards = OppponentsViewCards(_opponentViews);
+                    message.nOpponentCards = nOpponentsCards;
                     _views[opponentTurn].SendMessage(message);
 
                     //view giocatore 0
@@ -402,16 +402,13 @@ namespace UnoGame.Controllers
                 _views[_turn].SendMessage(new Message { Type = TypeMessage.START_TURN, MyHand = _views[_turn]._hand, nOpponentCards = nOpponentsCards, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = true });
                 
                 //rimando in wait gli avversari
-                Message message = new Message { Type = TypeMessage.WAITING_TURN, MyHand = _views[opponentTurn]._hand, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false };
+                Message message = new Message { Type = TypeMessage.WAITING_TURN,  lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false };
                 OpponentsViews(message);
             }
 
             else
             {
-                //se non posso scartare, mando WAITING_TURN
-                _views[_turn].SendMessage(new Message { Type = TypeMessage.WAITING_TURN, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
-
-
+     
                 //log console
                 Console.WriteLine($"Player {_turn} can't do any other move");
 
@@ -448,7 +445,9 @@ namespace UnoGame.Controllers
 
 
             //Agli avversari viene mmandato un messaggio di tipo WAITING_TURN
-            OpponentsViews(new Message { Type = TypeMessage.WAITING_TURN, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false });
+            Message message = new Message { Type = TypeMessage.WAITING_TURN, lastDiscardeCard = _model.DiscardedHand.Last(), alreadyDiscarded = false };
+
+            OpponentsViews(message);
 
         }
 

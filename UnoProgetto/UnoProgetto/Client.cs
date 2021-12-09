@@ -69,10 +69,9 @@ namespace Client
                     if (reader != null && data != null)
                     {
                         data = reader.ReadLine();
-                    }
 
-                 
-                    message = JsonSerializer.Deserialize<Message>(data);
+                        message = JsonSerializer.Deserialize<Message>(data);
+                    }
 
                 }
                 catch (Exception)
